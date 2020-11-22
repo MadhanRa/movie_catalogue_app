@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Movie Catalogue</string>
+    <string name="title_activity_detail">Detail</string>
+
+    <string name="title">Fantastic Beasts: The Crimes of Grindelwald</string>
+    <string name="certification">PG-18</string>
+    <string name="genre">Action &amp; Adventure, Sci-Fi &amp; Fantasy, Comedy, Drama</string>
+    <string name="tagline">Film ngak jelas.</string>
+    <string name="duration">10h 10m</string>
+    <string name="user_score">90</string>
+    <string name="user_score_title">User\nScore</string>
+    <string name="year">(2099)</string>
+    <string name="overview">Film ini hanyalah contoh random buat layout</string>
+    <string name="overview_title">Overview</string>
+    <string name="movie">Movie</string>
+    <string name="tv_show">Tv Show</string>
+    <string name="movie_catalogue_icon">Movie Catalogue Icon</string>
+    <string name="movie_catalogue_title">Movie Catalogue Title</string>
+</resources>
