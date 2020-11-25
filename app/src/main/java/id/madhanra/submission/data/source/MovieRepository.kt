@@ -6,16 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
 import id.madhanra.submission.data.source.local.entity.MoviesEntity
 import id.madhanra.submission.data.source.remote.ApiService
-import id.madhanra.submission.data.source.remote.response.DetailMovieResponse
-import id.madhanra.submission.data.source.remote.response.MovieResponse
 import id.madhanra.submission.data.source.remote.response.MoviesItem
 import id.madhanra.submission.utils.EspressoIdlingResource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -95,10 +90,6 @@ class MovieRepository @Inject constructor(private val apiService: ApiService, pr
             EspressoIdlingResource.decrement()
         }
         return movieResult
-    }
-
-    fun clearComposite() {
-        compositeDisposable.dispose()
     }
 
 }

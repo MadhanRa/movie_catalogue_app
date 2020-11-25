@@ -11,8 +11,4 @@ class MovieViewModel @ViewModelInject constructor(private val repository: MovieR
     fun getMovies() : LiveData<List<MoviesEntity>> = repository.getMovies()
     fun getLoading() : LiveData<Boolean> = repository.isLoading
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.clearComposite()
-    }
 }

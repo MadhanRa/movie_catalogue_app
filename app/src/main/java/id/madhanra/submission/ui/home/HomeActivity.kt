@@ -1,6 +1,5 @@
 package id.madhanra.submission.ui.home
 
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayoutMediator

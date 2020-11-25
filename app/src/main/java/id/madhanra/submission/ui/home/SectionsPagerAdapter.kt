@@ -1,6 +1,5 @@
 package id.madhanra.submission.ui.home
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

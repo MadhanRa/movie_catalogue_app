@@ -1,22 +1,18 @@
 package id.madhanra.submission.data.source
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.IdlingRegistry
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.verify
 import id.madhanra.submission.data.source.remote.ApiService
-import id.madhanra.submission.data.source.remote.response.MovieResponse
-import id.madhanra.submission.data.source.remote.response.MoviesItem
 import id.madhanra.submission.utils.DataDummy
+import id.madhanra.submission.utils.EspressoIdlingResource
 import id.madhanra.submission.utils.LiveDataTestUtil
 import id.madhanra.submission.utils.RxImmediateSchedulerRule
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import org.junit.*
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.ClassRule
-import org.junit.Rule
-import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
@@ -42,6 +38,7 @@ class MovieRepositoryTest{
     fun setUp() {
         movieRepository = MovieRepository(movieApi, compositeDisposable)
     }
+
 
     @Test
     fun getMovies() {

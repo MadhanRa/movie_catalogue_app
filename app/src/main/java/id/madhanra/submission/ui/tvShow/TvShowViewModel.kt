@@ -10,8 +10,4 @@ class TvShowViewModel @ViewModelInject constructor(private val repository: TvSho
     fun getTvShows() : LiveData<List<TvShowEntity>> = repository.getTvShow()
     fun getLoading() : LiveData<Boolean> = repository.isLoading
 
-    override fun onCleared() {
-        super.onCleared()
-        repository.clearComposite()
-    }
 }

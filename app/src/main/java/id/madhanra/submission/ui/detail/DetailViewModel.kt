@@ -21,9 +21,4 @@ class DetailViewModel @ViewModelInject constructor(private val movieRepository: 
     fun getDetailTvShow(): LiveData<DetailTvShowEntity> = tvShowRepository.getDetailTvShow(id.toInt())
     fun getLoadingTvShow() : LiveData<Boolean> = tvShowRepository.isLoading
 
-    override fun onCleared() {
-        super.onCleared()
-        movieRepository.clearComposite()
-        tvShowRepository.clearComposite()
-    }
 }

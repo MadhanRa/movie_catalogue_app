@@ -1,9 +1,6 @@
 package id.madhanra.submission.data.source.remote.response
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
 
 data class MovieResponse(
 
