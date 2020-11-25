@@ -24,10 +24,12 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:layout_marginBottom="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/content_detail" />
+        <include
+            layout="@layout/content_detail" />
 
     </androidx.core.widget.NestedScrollView>
 

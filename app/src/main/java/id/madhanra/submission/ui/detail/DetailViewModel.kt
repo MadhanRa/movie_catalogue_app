@@ -1,35 +1,29 @@
 package id.madhanra.submission.ui.detail
 
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import id.madhanra.submission.data.DataEntity
-import id.madhanra.submission.utils.DataSource
+import id.madhanra.submission.data.source.MovieRepository
+import id.madhanra.submission.data.source.TvShowRepository
+import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
+import id.madhanra.submission.data.source.local.entity.DetailTvShowEntity
 
-class DetailViewModel : ViewModel() {
+class DetailViewModel @ViewModelInject constructor(private val movieRepository: MovieRepository, private val tvShowRepository: TvShowRepository): ViewModel() {
     private lateinit var id : String
 
     fun setSelectedItem(id: String) {
         this.id = id
     }
 
-    fun getMovie(): DataEntity {
-        lateinit var movie: DataEntity
-        val moviesEntities = DataSource.generateMovie()
-        for (movieEntity in moviesEntities) {
-            if (movieEntity.id == id) {
-                movie = movieEntity
-            }
-        }
-        return movie
-    }
+    fun getDetailMovie(): LiveData<DetailMovieEntity> = movieRepository.getDetailMovie(id.toInt())
+    fun getLoading() : LiveData<Boolean> = movieRepository.isLoading
 
-    fun getTvShow(): DataEntity {
-        lateinit var tvShow: DataEntity
-        val tvShowsEntities = DataSource.generateTvShow()
-        for (tvShowEntity in tvShowsEntities) {
-            if (tvShowEntity.id == id) {
-                tvShow = tvShowEntity
-            }
-        }
-        return tvShow
+    fun getDetailTvShow(): LiveData<DetailTvShowEntity> = tvShowRepository.getDetailTvShow(id.toInt())
+    fun getLoadingTvShow() : LiveData<Boolean> = tvShowRepository.isLoading
+
+    override fun onCleared() {
+        super.onCleared()
+        movieRepository.clearComposite()
+        tvShowRepository.clearComposite()
     }
 }

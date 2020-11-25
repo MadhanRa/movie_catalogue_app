@@ -52,24 +52,6 @@
         app:layout_constraintTop_toBottomOf="@id/text_title"
         tools:text="@string/year"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/text_certification"
-        android:background="@drawable/certification_bg"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="12dp"
-        android:gravity="start"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_year"
-        tools:text="@string/certification"/>
 
     <TextView
         android:layout_width="0dp"
@@ -84,22 +66,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_certification"
+        app:layout_constraintTop_toBottomOf="@id/text_year"
         tools:text="@string/genre"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_length"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="12dp"
         android:gravity="start"
         android:textColor="@color/colorTextSecondary"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/text_certification"
-        app:layout_constraintTop_toTopOf="@id/text_certification"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_genre"
         tools:text="@string/duration"/>
 
     <View
@@ -110,12 +93,11 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
         android:background="@color/colorAccent"
-        app:layout_constraintTop_toBottomOf="@id/text_genre" />
+        app:layout_constraintTop_toBottomOf="@id/text_length" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_user_score_title"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
         android:gravity="start"
@@ -138,7 +120,7 @@
         android:background="@drawable/user_score_bg"
         android:gravity="center"
         android:padding="10dp"
-        android:textColor="@color/black"
+        android:textColor="@color/colorTextTertiary"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -196,6 +178,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_overview_title"
         tools:text="@string/overview"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

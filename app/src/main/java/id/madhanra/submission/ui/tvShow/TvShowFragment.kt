@@ -5,14 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
-import id.madhanra.submission.utils.DataSource
 import kotlinx.android.synthetic.main.fragment_tv_show.*
 
+@AndroidEntryPoint
 class TvShowFragment : Fragment() {
 
+    private val viewModel: TvShowViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,16 +28,21 @@ class TvShowFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
-            val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[TvShowViewModel::class.java]
-            val tvShows = viewModel.getTvShows()
-            val adapter = TvShowAdapter()
-            adapter.setTvShows(tvShows)
+            val tvShowAdapter = TvShowAdapter()
+            viewModel.getTvShows().observe(viewLifecycleOwner, {
+                tvShowAdapter.setTvShows(it)
+                tvShowAdapter.notifyDataSetChanged()
+            })
 
+            viewModel.getLoading().observe(viewLifecycleOwner, {
+                
+            })
             with(rv_tv_show){
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
-                this.adapter = adapter
+                this.adapter = tvShowAdapter
             }
+
         }
     }
 }
