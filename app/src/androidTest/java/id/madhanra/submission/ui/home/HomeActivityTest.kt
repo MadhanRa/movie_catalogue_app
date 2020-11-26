@@ -3,8 +3,7 @@ package id.madhanra.submission.ui.home
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.action.ViewActions.*
 
 
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -48,16 +47,11 @@ class HomeActivityTest {
         onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
         onView(withId(R.id.text_title)).check(matches(isDisplayed()))
         onView(withId(R.id.text_length)).check(matches(isDisplayed()))
-        onView(withId(R.id.text_year)).perform(swipeUp())
-        onView(withId(R.id.text_year)).perform(swipeUp())
-        onView(withId(R.id.text_year)).perform(swipeUp())
-        onView(withId(R.id.text_year)).perform(swipeUp())
-        onView(withId(R.id.text_year)).perform(swipeUp())
         onView(withId(R.id.text_year)).check(matches(isDisplayed()))
         onView(withId(R.id.text_genre)).check(matches(isDisplayed()))
-        onView(withId(R.id.text_user_score)).check(matches(isDisplayed()))
-        onView(withId(R.id.text_tagline)).check(matches(isDisplayed()))
-        onView(withId(R.id.text_overview)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_user_score)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_tagline)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_overview)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
     }
 
     @Test
