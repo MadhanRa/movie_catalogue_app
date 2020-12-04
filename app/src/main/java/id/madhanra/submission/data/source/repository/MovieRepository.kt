@@ -22,7 +22,7 @@ class MovieRepository @Inject constructor(
         private val appExecutors: AppExecutors
 ): MovieDataSource{
 
-    override fun getAllMovies(): LiveData<Resource<PagedList<MoviesEntity>>> {
+    override fun getAllMovies(sort: String): LiveData<Resource<PagedList<MoviesEntity>>> {
         return object: NetworkBoundResource<PagedList<MoviesEntity>, List<MoviesItem>>(appExecutors) {
             override fun loadFromDb(): LiveData<PagedList<MoviesEntity>> {
                 val config = PagedList.Config.Builder()
@@ -30,7 +30,7 @@ class MovieRepository @Inject constructor(
                     .setInitialLoadSizeHint(20)
                     .setPageSize(10)
                     .build()
-                return LivePagedListBuilder(movieLocalDataSource.getAllMovies(), config).build()
+                return LivePagedListBuilder(movieLocalDataSource.getAllMovies(sort), config).build()
             }
 
             override fun shouldFetch(data: PagedList<MoviesEntity>?): Boolean {

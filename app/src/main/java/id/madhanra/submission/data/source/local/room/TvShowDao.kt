@@ -3,13 +3,14 @@ package id.madhanra.submission.data.source.local.room
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 import id.madhanra.submission.data.source.local.entity.DetailTvShowEntity
 import id.madhanra.submission.data.source.local.entity.TvShowEntity
 
 @Dao
 interface TvShowDao {
-    @Query("SELECT * FROM tvshowentities")
-    fun getTvShows(): DataSource.Factory<Int, TvShowEntity>
+    @RawQuery(observedEntities = [TvShowEntity::class])
+    fun getTvShows(query: SupportSQLiteQuery): DataSource.Factory<Int, TvShowEntity>
 
     @Query("SELECT * FROM detailtvshowentity WHERE tvShowId = :id")
     fun getDetailTvShow(id : Int): LiveData<DetailTvShowEntity>

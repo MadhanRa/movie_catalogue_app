@@ -48,11 +48,11 @@ class TvShowRepositoryTest {
 
     @Test
     fun getTvShow() {
-        `when`(local.getAllTvShow()).thenReturn(dataSourceFactory)
-        tvShowRepository.getTvShow()
+        `when`(local.getAllTvShow(TvShowSortUtils.DEFAULT)).thenReturn(dataSourceFactory)
+        tvShowRepository.getTvShow(TvShowSortUtils.DEFAULT)
 
         val tvShowsResult = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateTvShow()))
-        verify(local).getAllTvShow()
+        verify(local).getAllTvShow(TvShowSortUtils.DEFAULT)
         assertNotNull(tvShowsResult.data)
         assertEquals(dummyRemoteTvShows.results.size, tvShowsResult.data?.size)
     }

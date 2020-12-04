@@ -117,7 +117,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun populateContentMovie(content: DetailMovieEntity) {
-
+        val releaseYear = content.releaseDate?.split("-")?.toTypedArray()
         var genre = ""
         if (!content.genres.isNullOrEmpty()) {
             for (x in content.genres.indices) {
@@ -153,7 +153,8 @@ class DetailActivity : AppCompatActivity() {
             .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
             .into(binding.contentDetail.imagePoster)
         binding.contentDetail.textTitle.text = content.title
-        binding.contentDetail.textYear.text = content.releaseDate
+        if (releaseYear != null)
+        binding.contentDetail.textYear.text = releaseYear[0]
         binding.contentDetail.textGenre.text = genre
         binding.contentDetail.textLength.text = length
         binding.contentDetail.textUserScore.text = score
@@ -161,7 +162,7 @@ class DetailActivity : AppCompatActivity() {
         binding.contentDetail.textTagline.text = content.tagLine
     }
     private fun populateContentTvShow(content: DetailTvShowEntity) {
-
+        val firstAirYear = content.firstAirDate?.split("-")?.toTypedArray()
         var genre = ""
         for (x in content.genres.indices) {
             if (x == content.genres.size - 1) {
@@ -196,7 +197,8 @@ class DetailActivity : AppCompatActivity() {
                 .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
                 .into(binding.contentDetail.imagePoster)
         binding.contentDetail.textTitle.text = content.name
-        binding.contentDetail.textYear.text = content.firstAirDate
+        if (firstAirYear != null)
+        binding.contentDetail.textYear.text = firstAirYear[0]
         binding.contentDetail.textGenre.text = genre
         binding.contentDetail.textLength.text = length
         binding.contentDetail.textUserScore.text = score

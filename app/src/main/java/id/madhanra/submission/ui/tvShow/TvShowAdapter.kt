@@ -45,8 +45,9 @@ class TvShowAdapter : PagedListAdapter<TvShowEntity ,TvShowAdapter.TvShowViewHol
     class TvShowViewHolder(private val binding: ItemForRvBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tvShow: TvShowEntity) {
             with(binding) {
+                val firstAirYear = tvShow.firstAirDate.split("-").toTypedArray()
+                tvItemYear.text = firstAirYear[0]
                 tvItemTitle.text = tvShow.name
-                tvItemYear.text = tvShow.firstAirDate
                 tvItemOverview.text = tvShow.overview
                 itemView.setOnClickListener{
                     val intent = Intent (itemView.context, DetailActivity::class.java).apply {

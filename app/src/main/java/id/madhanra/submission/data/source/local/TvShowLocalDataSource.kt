@@ -5,10 +5,14 @@ import androidx.paging.DataSource
 import id.madhanra.submission.data.source.local.entity.DetailTvShowEntity
 import id.madhanra.submission.data.source.local.entity.TvShowEntity
 import id.madhanra.submission.data.source.local.room.TvShowDao
+import id.madhanra.submission.utils.TvShowSortUtils
 import javax.inject.Inject
 
 class TvShowLocalDataSource @Inject constructor(private val mTvShowDao: TvShowDao){
-    fun getAllTvShow(): DataSource.Factory<Int, TvShowEntity> = mTvShowDao.getTvShows()
+    fun getAllTvShow(sort: String): DataSource.Factory<Int, TvShowEntity> {
+        val query = TvShowSortUtils.getSortedQuery(sort)
+        return mTvShowDao.getTvShows(query)
+    }
 
     fun getDetailTvShow(id: Int): LiveData<DetailTvShowEntity> = mTvShowDao.getDetailTvShow(id)
 

@@ -2,7 +2,10 @@ package id.madhanra.submission.ui.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 
 import id.madhanra.submission.R
@@ -20,16 +23,10 @@ class HomeActivity : AppCompatActivity() {
         setContentView(view)
         supportActionBar?.elevation = 0f
 
-
-        val sectionsPagerAdapter = SectionsPagerAdapter(this)
-        binding.viewPager.adapter = sectionsPagerAdapter
-        TabLayoutMediator(binding.tabs, binding.viewPager) {tab, position->
-            when(position) {
-                0 -> tab.text = resources.getString(R.string.movie)
-                1 -> tab.text = resources.getString(R.string.tv_show)
-                2 -> tab.text = resources.getString(R.string.movie_fav)
-                3 -> tab.text = resources.getString(R.string.tv_show_fav)
-            }
-        }.attach()
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.movieFragment, R.id.tvShowFragment, R.id.favoriteFragment))
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 }

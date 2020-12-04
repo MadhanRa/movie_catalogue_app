@@ -42,8 +42,9 @@ class MovieAdapter : PagedListAdapter<MoviesEntity, MovieAdapter.MovieViewHolder
     class MovieViewHolder(private val binding: ItemForRvBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: MoviesEntity) {
             with(binding) {
+                val releaseYear = movie.releaseDate.split("-").toTypedArray()
+                tvItemYear.text = releaseYear[0]
                 tvItemTitle.text = movie.title
-                tvItemYear.text = movie.releaseDate
                 tvItemOverview.text = movie.overview
                 itemView.setOnClickListener{
                     val intent = Intent(itemView.context, DetailActivity::class.java).apply {

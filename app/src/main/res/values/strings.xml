@@ -16,6 +16,10 @@
     <string name="tv_show">Tv Show</string>
     <string name="movie_catalogue_icon">Movie Catalogue Icon</string>
     <string name="movie_catalogue_title">Movie Catalogue Title</string>
-    <string name="tv_show_fav">Favorite Tv Show</string>
-    <string name="movie_fav">Favorite Movies</string>
+    <string name="tv_show_fav">Tv Shows</string>
+    <string name="movie_fav">Movies</string>
+    <string name="favorite">Favorite</string>
+    <string name="menu_az">A - Z</string>
+    <string name="menu_za">Z - A</string>
+    <string name="menu_default">Default</string>
 </resources>

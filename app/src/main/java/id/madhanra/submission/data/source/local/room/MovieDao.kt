@@ -3,13 +3,14 @@ package id.madhanra.submission.data.source.local.room
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteQuery
 import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
 import id.madhanra.submission.data.source.local.entity.MoviesEntity
 
 @Dao
 interface MovieDao {
-    @Query("SELECT * FROM moviesentities")
-    fun getMovies(): DataSource.Factory<Int, MoviesEntity>
+    @RawQuery(observedEntities = [MoviesEntity::class])
+    fun getMovies(query: SupportSQLiteQuery): DataSource.Factory<Int, MoviesEntity>
 
     @Query ("SELECT * FROM detailmovieentity WHERE movieId = :id")
     fun getDetailMovie(id : Int): LiveData<DetailMovieEntity>

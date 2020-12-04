@@ -51,11 +51,11 @@ class MovieRepositoryTest{
 
     @Test
     fun getMovies() {
-        `when`(local.getAllMovies()).thenReturn(dataSourceFactory)
-        movieRepository.getAllMovies()
+        `when`(local.getAllMovies(SortUtils.DEFAULT)).thenReturn(dataSourceFactory)
+        movieRepository.getAllMovies(SortUtils.DEFAULT)
 
         val movieResult = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateMovies()))
-        verify(local).getAllMovies()
+        verify(local).getAllMovies(SortUtils.DEFAULT)
         assertNotNull(movieResult.data)
         assertEquals(dummyRemoteMovies.results.size.toLong(), movieResult.data?.size?.toLong())
     }

@@ -45,7 +45,7 @@ class HomeActivityTest {
 
     @Test
     fun loadDetailMovie() {
-        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
         onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
         onView(withId(R.id.text_title)).check(matches(isDisplayed()))
         onView(withId(R.id.text_length)).check(matches(isDisplayed()))
@@ -59,14 +59,14 @@ class HomeActivityTest {
 
     @Test
     fun loadTvShow() {
-        onView(withText(R.string.tv_show)).perform(click())
+        onView(withContentDescription(R.string.tv_show)).perform(click())
         onView(withId(R.id.rv_tv_show)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(dummyTvShow.size))
     }
 
     @Test
     fun loadDetailTvShow() {
-        onView(withText(R.string.tv_show)).perform(click())
+        onView(withContentDescription(R.string.tv_show)).perform(click())
         onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
         onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
         onView(withId(R.id.text_title)).check(matches(isDisplayed()))
@@ -82,11 +82,11 @@ class HomeActivityTest {
     @Test
     fun loadMoviesFav() {
         onView(withId(R.id.rv_movies)).check(matches(isDisplayed()))
-        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(1, click()))
         onView(withId(R.id.favorite_button)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
         onView(withId(R.id.favorite_button)).perform(click())
         onView(isRoot()).perform(pressBack())
-        onView(withText(R.string.movie_fav)).perform(click())
+        onView(withContentDescription(R.string.favorite)).perform(click())
         onView(withId(R.id.rv_fav_movies)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_fav_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
@@ -101,12 +101,13 @@ class HomeActivityTest {
 
     @Test
     fun loadTvShowFav() {
-        onView(withText(R.string.tv_show)).perform(click())
+        onView(withContentDescription(R.string.tv_show)).perform(click())
         onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
         onView(withId(R.id.favorite_button)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
         onView(withId(R.id.favorite_button)).perform(click())
         onView(isRoot()).perform(pressBack())
-        onView(withText(R.string.tv_show_fav)).perform(click())
+        onView(withContentDescription(R.string.favorite)).perform(click())
+        onView(withContentDescription(R.string.tv_show_fav)).perform(click())
         onView(withId(R.id.rv_fav_tv_show)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_fav_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(withId(R.id.image_poster)).check(matches(isDisplayed()))

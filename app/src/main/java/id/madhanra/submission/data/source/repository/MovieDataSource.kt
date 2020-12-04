@@ -7,7 +7,7 @@ import id.madhanra.submission.data.source.local.entity.MoviesEntity
 import id.madhanra.submission.vo.Resource
 
 interface MovieDataSource {
-    fun getAllMovies(): LiveData<Resource<PagedList<MoviesEntity>>>
+    fun getAllMovies(sort: String): LiveData<Resource<PagedList<MoviesEntity>>>
 
     fun getDetailMovie(id: Int): LiveData<Resource<DetailMovieEntity>>
 

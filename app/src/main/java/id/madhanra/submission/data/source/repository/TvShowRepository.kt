@@ -23,7 +23,7 @@ class TvShowRepository @Inject constructor(
     private val appExecutors: AppExecutors
     ) : TvShowDataSource {
 
-    override fun getTvShow(): LiveData<Resource<PagedList<TvShowEntity>>> {
+    override fun getTvShow(sort: String): LiveData<Resource<PagedList<TvShowEntity>>> {
         return object: NetworkBoundResource<PagedList<TvShowEntity>, List<TvShowsItem>>(appExecutors){
             override fun loadFromDb(): LiveData<PagedList<TvShowEntity>> {
                 val config = PagedList.Config.Builder()
@@ -31,7 +31,7 @@ class TvShowRepository @Inject constructor(
                     .setInitialLoadSizeHint(20)
                     .setPageSize(10)
                     .build()
-                return LivePagedListBuilder(tvShowLocalDataSource.getAllTvShow(), config).build()
+                return LivePagedListBuilder(tvShowLocalDataSource.getAllTvShow(sort), config).build()
             }
 
             override fun shouldFetch(data: PagedList<TvShowEntity>?): Boolean {

@@ -9,7 +9,7 @@ import id.madhanra.submission.data.source.local.entity.TvShowEntity
 import id.madhanra.submission.vo.Resource
 
 class TvShowViewModel @ViewModelInject constructor(private val repository: TvShowRepository) : ViewModel() {
-    fun getTvShows() : LiveData<Resource<PagedList<TvShowEntity>>> = repository.getTvShow()
+    fun getTvShows(sort: String) : LiveData<Resource<PagedList<TvShowEntity>>> = repository.getTvShow(sort)
 
 
 }

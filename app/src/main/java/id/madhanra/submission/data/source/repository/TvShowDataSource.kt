@@ -7,7 +7,7 @@ import id.madhanra.submission.data.source.local.entity.TvShowEntity
 import id.madhanra.submission.vo.Resource
 
 interface TvShowDataSource {
-    fun getTvShow(): LiveData<Resource<PagedList<TvShowEntity>>>
+    fun getTvShow(sort: String): LiveData<Resource<PagedList<TvShowEntity>>>
 
     fun getDetailTvShow(id: Int): LiveData<Resource<DetailTvShowEntity>>
 

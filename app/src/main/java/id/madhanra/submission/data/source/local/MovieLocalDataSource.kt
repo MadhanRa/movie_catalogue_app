@@ -5,11 +5,15 @@ import androidx.paging.DataSource
 import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
 import id.madhanra.submission.data.source.local.entity.MoviesEntity
 import id.madhanra.submission.data.source.local.room.MovieDao
+import id.madhanra.submission.utils.SortUtils
 import javax.inject.Inject
 
 class MovieLocalDataSource @Inject constructor(private val mMovieDao: MovieDao) {
 
-    fun getAllMovies(): DataSource.Factory<Int, MoviesEntity> = mMovieDao.getMovies()
+    fun getAllMovies(sort: String): DataSource.Factory<Int, MoviesEntity> {
+        val query = SortUtils.getSortedQuery(sort)
+        return mMovieDao.getMovies(query)
+    }
 
     fun getDetailMovie(id : Int): LiveData<DetailMovieEntity> = mMovieDao.getDetailMovie(id)
 
