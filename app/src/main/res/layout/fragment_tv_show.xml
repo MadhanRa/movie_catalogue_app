@@ -21,9 +21,9 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyle"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

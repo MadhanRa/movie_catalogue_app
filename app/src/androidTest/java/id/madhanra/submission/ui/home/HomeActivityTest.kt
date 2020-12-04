@@ -3,6 +3,8 @@ package id.madhanra.submission.ui.home
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 
 
@@ -52,13 +54,71 @@ class HomeActivityTest {
         onView(withId(R.id.text_user_score)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
         onView(withId(R.id.text_tagline)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
         onView(withId(R.id.text_overview)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(isRoot()).perform(pressBack())
     }
 
     @Test
     fun loadTvShow() {
-        onView(withText("TV SHOW")).perform(click())
+        onView(withText(R.string.tv_show)).perform(click())
         onView(withId(R.id.rv_tv_show)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(dummyTvShow.size))
     }
+
+    @Test
+    fun loadDetailTvShow() {
+        onView(withText(R.string.tv_show)).perform(click())
+        onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+        onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_title)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_length)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_year)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_genre)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_user_score)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_tagline)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_overview)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(isRoot()).perform(pressBack())
+    }
+
+    @Test
+    fun loadMoviesFav() {
+        onView(withId(R.id.rv_movies)).check(matches(isDisplayed()))
+        onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+        onView(withId(R.id.favorite_button)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.favorite_button)).perform(click())
+        onView(isRoot()).perform(pressBack())
+        onView(withText(R.string.movie_fav)).perform(click())
+        onView(withId(R.id.rv_fav_movies)).check(matches(isDisplayed()))
+        onView(withId(R.id.rv_fav_movies)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+        onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_title)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_length)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_year)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_genre)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_user_score)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_tagline)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_overview)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun loadTvShowFav() {
+        onView(withText(R.string.tv_show)).perform(click())
+        onView(withId(R.id.rv_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(2, click()))
+        onView(withId(R.id.favorite_button)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.favorite_button)).perform(click())
+        onView(isRoot()).perform(pressBack())
+        onView(withText(R.string.tv_show_fav)).perform(click())
+        onView(withId(R.id.rv_fav_tv_show)).check(matches(isDisplayed()))
+        onView(withId(R.id.rv_fav_tv_show)).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+        onView(withId(R.id.image_poster)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_title)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_length)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_year)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_genre)).check(matches(isDisplayed()))
+        onView(withId(R.id.text_user_score)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_tagline)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+        onView(withId(R.id.text_overview)).perform(NestedScrollViewExtension()).check(matches(isDisplayed()))
+    }
+
+
 
 }

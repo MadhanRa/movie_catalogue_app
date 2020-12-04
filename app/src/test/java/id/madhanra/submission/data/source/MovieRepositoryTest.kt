@@ -1,21 +1,25 @@
 package id.madhanra.submission.data.source
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.espresso.IdlingRegistry
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
-import id.madhanra.submission.data.source.remote.ApiService
-import id.madhanra.submission.utils.DataDummy
-import id.madhanra.submission.utils.EspressoIdlingResource
-import id.madhanra.submission.utils.LiveDataTestUtil
-import id.madhanra.submission.utils.RxImmediateSchedulerRule
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import org.junit.*
-import org.junit.Assert.*
+import id.madhanra.submission.data.source.local.MovieLocalDataSource
+import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
+import id.madhanra.submission.data.source.local.entity.MoviesEntity
+import id.madhanra.submission.data.source.remote.MovieRemoteDataSource
+import id.madhanra.submission.data.source.repository.MovieRepository
+import id.madhanra.submission.utils.*
+import id.madhanra.submission.vo.Resource
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Before
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-
 
 
 class MovieRepositoryTest{
@@ -28,51 +32,72 @@ class MovieRepositoryTest{
         val schedulers = RxImmediateSchedulerRule()
     }
     lateinit var movieRepository: MovieRepository
-    private val movieApi = mock(ApiService::class.java)
-    private val compositeDisposable = mock(CompositeDisposable::class.java)
 
-    private val dummyMovies = DataDummy.generateRemoteMovies()
-    private val dummyMovie = DataDummy.generateRemoteMovieDetail()
+    private val remote = mock(MovieRemoteDataSource::class.java)
+    private val local = mock(MovieLocalDataSource::class.java)
+    private val appExecutors = mock(AppExecutors::class.java)
+
+    @Suppress("UNCHECKED_CAST")
+    private val dataSourceFactory = mock(DataSource.Factory::class.java) as DataSource.Factory<Int, MoviesEntity>
+
+    private val dummyRemoteMovies = DataDummy.generateRemoteMovies()
+    private val dummyRemoteMovieDetail = DataDummy.generateRemoteMovieDetail()
 
     @Before
     fun setUp() {
-        movieRepository = MovieRepository(movieApi, compositeDisposable)
+        movieRepository = MovieRepository(remote, local, appExecutors)
     }
 
 
     @Test
     fun getMovies() {
-        `when`(movieApi.getPopularMovies(any())).thenReturn(Single.just(dummyMovies))
-        val movieResult = LiveDataTestUtil.getValue(movieRepository.getMovies())
-        verify(movieApi).getPopularMovies(any())
-        assertNotNull(movieResult)
-        assertEquals(dummyMovies.results.size, movieResult.size)
+        `when`(local.getAllMovies()).thenReturn(dataSourceFactory)
+        movieRepository.getAllMovies()
+
+        val movieResult = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateMovies()))
+        verify(local).getAllMovies()
+        assertNotNull(movieResult.data)
+        assertEquals(dummyRemoteMovies.results.size.toLong(), movieResult.data?.size?.toLong())
+    }
+
+    @Test
+    fun getFavoredMovies(){
+        `when`(local.getFavoredMovies()).thenReturn(dataSourceFactory)
+        movieRepository.getFavoredMovies()
+
+        val movieResult = Resource.success(PagedListUtil.mockPagedList(DataDummy.generateMovies()))
+        verify(local).getFavoredMovies()
+        assertNotNull(movieResult.data)
+        assertEquals(dummyRemoteMovies.results.size.toLong(), movieResult.data?.size?.toLong())
     }
 
     @Test
     fun getDetailMovies() {
-        `when`(movieApi.getMovieDetail(any())).thenReturn(Single.just(dummyMovie))
+        val dummyMovie = MutableLiveData<DetailMovieEntity>()
+        dummyMovie.value = DataDummy.generateMovieDetail()
+        `when`(local.getDetailMovie(any())).thenReturn(dummyMovie)
+
         val movieEntity = LiveDataTestUtil.getValue(movieRepository.getDetailMovie(any()))
-        verify(movieApi).getMovieDetail(any())
+        verify(local).getDetailMovie(any())
         assertNotNull(movieEntity)
-        assertNotNull(movieEntity.title)
-        assertEquals(dummyMovie.title, movieEntity.title)
-        assertNotNull(movieEntity.genres)
-        assertEquals(dummyMovie.genres, movieEntity.genres)
-        assertNotNull(movieEntity.posterPath)
-        assertEquals(dummyMovie.posterPath, movieEntity.posterPath)
-        assertNotNull(movieEntity.voteAverage)
-        assertEquals(dummyMovie.voteAverage, movieEntity.voteAverage)
-        assertNotNull(movieEntity.tagLine)
-        assertEquals(dummyMovie.tagLine, movieEntity.tagLine)
-        assertNotNull(movieEntity.runtime)
-        assertEquals(dummyMovie.runtime, movieEntity.runtime)
-        assertNotNull(movieEntity.releaseDate)
-        assertEquals(dummyMovie.releaseDate, movieEntity.releaseDate)
-        assertNotNull(movieEntity.id)
-        assertEquals(dummyMovie.id, movieEntity.id)
-        assertNotNull(movieEntity.overview)
-        assertEquals(dummyMovie.overview, movieEntity.overview)
+        assertNotNull(movieEntity.data?.title)
+        assertEquals(dummyRemoteMovieDetail.title, movieEntity.data?.title)
+        assertNotNull(movieEntity.data?.genres)
+        assertEquals(dummyRemoteMovieDetail.genres, movieEntity.data?.genres)
+        assertNotNull(movieEntity.data?.posterPath)
+        assertEquals(dummyRemoteMovieDetail.posterPath, movieEntity.data?.posterPath)
+        assertNotNull(movieEntity.data?.voteAverage)
+        assertEquals(dummyRemoteMovieDetail.voteAverage, movieEntity.data?.voteAverage)
+        assertNotNull(movieEntity.data?.tagLine)
+        assertEquals(dummyRemoteMovieDetail.tagLine, movieEntity.data?.tagLine)
+        assertNotNull(movieEntity.data?.runtime)
+        assertEquals(dummyRemoteMovieDetail.runtime, movieEntity.data?.runtime)
+        assertNotNull(movieEntity.data?.releaseDate)
+        assertEquals(dummyRemoteMovieDetail.releaseDate, movieEntity.data?.releaseDate)
+        assertNotNull(movieEntity.data?.id)
+        assertEquals(dummyRemoteMovieDetail.id, movieEntity.data?.id)
+        assertNotNull(movieEntity.data?.overview)
+        assertEquals(dummyRemoteMovieDetail.overview, movieEntity.data?.overview)
     }
 }
 

@@ -3,14 +3,15 @@ package id.madhanra.submission.ui.movie
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import id.madhanra.submission.data.source.MovieRepository
+import androidx.paging.PagedList
 import id.madhanra.submission.data.source.local.entity.MoviesEntity
-import id.madhanra.submission.utils.DataDummy
-import org.junit.Test
-
-import org.junit.Assert.*
+import id.madhanra.submission.data.source.repository.MovieRepository
+import id.madhanra.submission.vo.Resource
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
@@ -29,7 +30,10 @@ class MovieViewModelTest {
     private lateinit var movieRepository: MovieRepository
 
     @Mock
-    private lateinit var observer: Observer<List<MoviesEntity>>
+    private lateinit var observer: Observer<Resource<PagedList<MoviesEntity>>>
+
+    @Mock
+    private lateinit var  pagedList: PagedList<MoviesEntity>
 
     @Before
     fun setUp() {
@@ -38,13 +42,14 @@ class MovieViewModelTest {
 
     @Test
     fun getMovies() {
-        val dummyMovies = DataDummy.generateMovies()
-        val movies = MutableLiveData<List<MoviesEntity>>()
+        val dummyMovies = Resource.success(pagedList)
+        `when`(dummyMovies.data?.size).thenReturn(20)
+        val movies = MutableLiveData<Resource<PagedList<MoviesEntity>>>()
         movies.value = dummyMovies
 
-        `when`(movieRepository.getMovies()).thenReturn(movies)
-        val movieEntities = viewModel.getMovies().value
-        verify(movieRepository).getMovies()
+        `when`(movieRepository.getAllMovies()).thenReturn(movies)
+        val movieEntities = viewModel.getMovies().value?.data
+        verify(movieRepository).getAllMovies()
         assertNotNull(movieEntities)
         assertEquals(20, movieEntities?.size)
 

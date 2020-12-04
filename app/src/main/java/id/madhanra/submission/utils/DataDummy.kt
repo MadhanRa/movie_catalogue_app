@@ -31,11 +31,11 @@ object DataDummy {
         for (x in 1..20) {
             tvShowResult.add(
                 TvShowEntity(
-                    "Airdate$x",
+                    x,
                     "Overview$x",
                     "Poster$x",
                     "Name$x",
-                    x
+                    "Airdate$x"
                 )
             )
         }
@@ -124,7 +124,7 @@ object DataDummy {
     }
 
     fun generateRemoteTvShowDetail(): DetailTvShowResponse {
-        val genres = listOf(GenresItemTvShow("genre1"))
+        val genres = listOf(GenresItemTvShow("Genre1"))
         val runtimeList = listOf(20)
         return DetailTvShowResponse(
                 genres,

@@ -3,14 +3,15 @@ package id.madhanra.submission.ui.tvShow
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import id.madhanra.submission.data.source.TvShowRepository
+import androidx.paging.PagedList
 import id.madhanra.submission.data.source.local.entity.TvShowEntity
-import id.madhanra.submission.utils.DataDummy
-import org.junit.Test
-
-import org.junit.Assert.*
+import id.madhanra.submission.data.source.repository.TvShowRepository
+import id.madhanra.submission.vo.Resource
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
@@ -28,7 +29,10 @@ class TvShowViewModelTest {
     private lateinit var tvShowRepository: TvShowRepository
 
     @Mock
-    private lateinit var observer: Observer<List<TvShowEntity>>
+    private lateinit var observer: Observer<Resource<PagedList<TvShowEntity>>>
+
+    @Mock
+    private lateinit var pagedList: PagedList<TvShowEntity>
 
     @Before
     fun setUp() {
@@ -37,12 +41,13 @@ class TvShowViewModelTest {
 
     @Test
     fun getTvShows() {
-        val dummyTvShows = DataDummy.generateTvShow()
-        val tvShows = MutableLiveData<List<TvShowEntity>>()
+        val dummyTvShows = Resource.success(pagedList)
+        `when`(dummyTvShows.data?.size).thenReturn(20)
+        val tvShows = MutableLiveData<Resource<PagedList<TvShowEntity>>>()
         tvShows.value = dummyTvShows
 
         `when`(tvShowRepository.getTvShow()).thenReturn(tvShows)
-        val tvShowEntities = viewModel.getTvShows().value
+        val tvShowEntities = viewModel.getTvShows().value?.data
         verify(tvShowRepository).getTvShow()
         assertNotNull(tvShowEntities)
         assertEquals(20, tvShowEntities?.size)

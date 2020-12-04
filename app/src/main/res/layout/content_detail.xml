@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/content_detail"
     android:descendantFocusability="blocksDescendants">
 
     <ImageView
@@ -129,6 +130,22 @@
         app:layout_constraintTop_toBottomOf="@id/line1"
         tools:text="@string/user_score" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/favorite_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:foregroundGravity="center"
+        android:padding="8dp"
+        android:background="@drawable/user_score_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_user_score"
+        app:layout_constraintBottom_toBottomOf="@id/text_user_score"
+        android:layout_marginEnd="16dp"
+        app:lottie_rawRes="@raw/lottie_favorite_icon"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"/>
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -180,9 +197,9 @@
         tools:text="@string/overview"/>
 
     <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyle"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
