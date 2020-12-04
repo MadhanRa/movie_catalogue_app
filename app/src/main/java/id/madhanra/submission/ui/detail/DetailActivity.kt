@@ -19,8 +19,6 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
-    private val contentBinding = binding.contentDetail
-
     private val viewModel : DetailViewModel by viewModels()
 
     companion object{
@@ -37,6 +35,8 @@ class DetailActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val contentBinding = binding.contentDetail
 
         contentBinding.favoriteButton.apply {
             setMinAndMaxFrame(40, 100 )
@@ -104,12 +104,12 @@ class DetailActivity : AppCompatActivity() {
 
     private fun setFavoriteState(favorite: Boolean){
         if (!favorite) {
-            contentBinding.favoriteButton.apply{
+            binding.contentDetail.favoriteButton.apply{
                 speed = -1f
                 playAnimation()
             }
         } else {
-            contentBinding.favoriteButton.apply {
+            binding.contentDetail.favoriteButton.apply {
                 speed = 1f
                 playAnimation()
             }
@@ -151,14 +151,14 @@ class DetailActivity : AppCompatActivity() {
         Glide.with(this)
             .load("${content.baseUrlPoster}${content.posterPath}")
             .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-            .into(contentBinding.imagePoster)
-        contentBinding.textTitle.text = content.title
-        contentBinding.textYear.text = content.releaseDate
-        contentBinding.textGenre.text = genre
-        contentBinding.textLength.text = length
-        contentBinding.textUserScore.text = score
-        contentBinding.textOverview.text = content.overview
-        contentBinding.textTagline.text = content.tagLine
+            .into(binding.contentDetail.imagePoster)
+        binding.contentDetail.textTitle.text = content.title
+        binding.contentDetail.textYear.text = content.releaseDate
+        binding.contentDetail.textGenre.text = genre
+        binding.contentDetail.textLength.text = length
+        binding.contentDetail.textUserScore.text = score
+        binding.contentDetail.textOverview.text = content.overview
+        binding.contentDetail.textTagline.text = content.tagLine
     }
     private fun populateContentTvShow(content: DetailTvShowEntity) {
 
@@ -194,13 +194,13 @@ class DetailActivity : AppCompatActivity() {
         Glide.with(this)
                 .load("${content.baseUrlPoster}${content.posterPath}")
                 .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                .into(contentBinding.imagePoster)
-        contentBinding.textTitle.text = content.name
-        contentBinding.textYear.text = content.firstAirDate
-        contentBinding.textGenre.text = genre
-        contentBinding.textLength.text = length
-        contentBinding.textUserScore.text = score
-        contentBinding.textOverview.text = content.overview
-        contentBinding.textTagline.text = content.tagLine
+                .into(binding.contentDetail.imagePoster)
+        binding.contentDetail.textTitle.text = content.name
+        binding.contentDetail.textYear.text = content.firstAirDate
+        binding.contentDetail.textGenre.text = genre
+        binding.contentDetail.textLength.text = length
+        binding.contentDetail.textUserScore.text = score
+        binding.contentDetail.textOverview.text = content.overview
+        binding.contentDetail.textTagline.text = content.tagLine
     }
 }
