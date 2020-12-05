@@ -20,6 +20,7 @@ class MovieFragment : Fragment() {
     private val viewModel: MovieViewModel by viewModels()
     private lateinit var movieAdapter: MovieAdapter
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,6 +61,7 @@ class MovieFragment : Fragment() {
                 setHasFixedSize(true)
                 adapter = movieAdapter
             }
+
         }
     }
 

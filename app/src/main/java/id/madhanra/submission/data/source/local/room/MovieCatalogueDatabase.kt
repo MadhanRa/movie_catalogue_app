@@ -1,8 +1,5 @@
 package id.madhanra.submission.data.source.local.room
-
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import id.madhanra.submission.data.source.local.GenresItemConverter
@@ -20,14 +17,4 @@ exportSchema = false)
 abstract class MovieCatalogueDatabase : RoomDatabase() {
     abstract fun movieDao(): MovieDao
     abstract fun tvShowDao(): TvShowDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: MovieCatalogueDatabase? = null
-
-        fun getInstance(context: Context): MovieCatalogueDatabase =
-            INSTANCE?: Room.databaseBuilder(context.applicationContext,
-            MovieCatalogueDatabase::class.java,
-            "MovieCatalogue.db").build()
-    }
 }

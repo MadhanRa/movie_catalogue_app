@@ -10,6 +10,8 @@ import id.madhanra.submission.vo.Resource
 
 
 class MovieViewModel @ViewModelInject constructor(private val repository: MovieRepository) : ViewModel() {
+
+
     fun getMovies(sort: String) : LiveData<Resource<PagedList<MoviesEntity>>> = repository.getAllMovies(sort)
 
 }

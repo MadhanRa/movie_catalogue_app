@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import id.madhanra.submission.data.source.remote.response.DetailMovieResponse
-import id.madhanra.submission.data.source.remote.response.MovieResponse
 import id.madhanra.submission.data.source.remote.response.MoviesItem
 import id.madhanra.submission.utils.EspressoIdlingResource
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,6 +44,7 @@ class MovieRemoteDataSource @Inject constructor(
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({ response ->
+
                             resultMovie.value = ApiResponse.success(response)
                             if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
                                 EspressoIdlingResource.decrement()
