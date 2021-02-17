@@ -2,14 +2,15 @@ package id.madhanra.submission.ui.tvShow
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
-import id.madhanra.submission.data.source.repository.TvShowRepository
-import id.madhanra.submission.data.source.local.entity.TvShowEntity
-import id.madhanra.submission.vo.Resource
+import id.madhanra.submission.core.domain.model.TvShows
+import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
+import id.madhanra.submission.core.vo.Resource
 
-class TvShowViewModel @ViewModelInject constructor(private val repository: TvShowRepository) : ViewModel() {
-    fun getTvShows(sort: String) : LiveData<Resource<PagedList<TvShowEntity>>> = repository.getTvShow(sort)
+class TvShowViewModel @ViewModelInject constructor(private val tvShowUseCase: TvShowsUseCase) : ViewModel() {
+    fun getTvShows(sort: String) : LiveData<Resource<PagedList<TvShows>>> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getTvShow(sort))
 
 
 }

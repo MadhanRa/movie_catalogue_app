@@ -4,10 +4,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
-import id.madhanra.submission.data.source.local.entity.MoviesEntity
-import id.madhanra.submission.data.source.repository.MovieRepository
-import id.madhanra.submission.utils.SortUtils
-import id.madhanra.submission.vo.Resource
+import id.madhanra.submission.core.data.source.local.entity.MoviesEntity
+import id.madhanra.submission.core.data.repository.MovieRepository
+import id.madhanra.submission.core.utils.SortUtils
+import id.madhanra.submission.core.vo.Resource
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before

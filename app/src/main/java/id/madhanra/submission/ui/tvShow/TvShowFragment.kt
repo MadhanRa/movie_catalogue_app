@@ -1,5 +1,6 @@
 package id.madhanra.submission.ui.tvShow
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -8,12 +9,18 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
+import id.madhanra.submission.core.ui.TvShowAdapter
 import id.madhanra.submission.databinding.FragmentTvShowBinding
-import id.madhanra.submission.utils.TvShowSortUtils
-import id.madhanra.submission.vo.Status
+import id.madhanra.submission.core.utils.TvShowSortUtils
+import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.ui.detail.DetailActivity
 
 @AndroidEntryPoint
 class TvShowFragment : Fragment() {
+
+    private val sortAZ = "A-Z"
+    private val sortZA = "Z-A"
+    private val sortDEFAULT = "Default"
 
     private var _binding: FragmentTvShowBinding? = null
     private val binding get() = _binding!!
@@ -38,6 +45,15 @@ class TvShowFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
             tvShowAdapter = TvShowAdapter()
+
+            tvShowAdapter.onItemClick = { selectedItem ->
+                val intent = Intent (activity, DetailActivity::class.java).apply {
+                    putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
+                    putExtra(DetailActivity.EXTRA_CODE, 0)
+                }
+                startActivity(intent)
+            }
+
             viewModel.getTvShows(TvShowSortUtils.DEFAULT).observe(viewLifecycleOwner, { tvShows ->
                 if (tvShows != null) {
                     when (tvShows.status) {
@@ -72,9 +88,9 @@ class TvShowFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var sort = ""
         when (item.itemId){
-            R.id.action_az -> sort = TvShowSortUtils.AZ
-            R.id.action_za -> sort = TvShowSortUtils.ZA
-            R.id.action_default -> sort = TvShowSortUtils.DEFAULT
+            R.id.action_az -> sort = sortAZ
+            R.id.action_za -> sort = sortZA
+            R.id.action_default -> sort = sortDEFAULT
         }
         viewModel.getTvShows(sort).observe(this, { tvShow ->
             if (tvShow != null) {

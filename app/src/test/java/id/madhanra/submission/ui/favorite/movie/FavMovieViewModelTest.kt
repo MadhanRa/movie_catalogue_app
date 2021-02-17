@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import com.nhaarman.mockitokotlin2.verify
-import id.madhanra.submission.data.source.local.entity.MoviesEntity
-import id.madhanra.submission.data.source.repository.MovieRepository
+import id.madhanra.submission.core.data.source.local.entity.MoviesEntity
+import id.madhanra.submission.core.data.repository.MovieRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
 import id.madhanra.submission.R
 import id.madhanra.submission.databinding.FragmentFavoriteBinding
-import id.madhanra.submission.utils.SectionsPagerAdapter
 
 class FavoriteFragment : Fragment() {
 

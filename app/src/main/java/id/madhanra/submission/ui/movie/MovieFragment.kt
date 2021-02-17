@@ -1,5 +1,6 @@
 package id.madhanra.submission.ui.movie
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -8,12 +9,19 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
+import id.madhanra.submission.core.domain.model.Movies
+import id.madhanra.submission.core.ui.MovieAdapter
 import id.madhanra.submission.databinding.FragmentMovieBinding
-import id.madhanra.submission.utils.SortUtils
-import id.madhanra.submission.vo.Status
+import id.madhanra.submission.core.utils.SortUtils
+import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.ui.detail.DetailActivity
 
 @AndroidEntryPoint
-class MovieFragment : Fragment() {
+class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
+
+    private val sortAZ = "A-Z"
+    private val sortZA = "Z-A"
+    private val sortDEFAULT = "Default"
 
     private var _binding: FragmentMovieBinding? = null
     private val binding get() = _binding!!
@@ -38,7 +46,12 @@ class MovieFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (activity != null) {
-            movieAdapter = MovieAdapter()
+            movieAdapter = MovieAdapter(this)
+
+//            movieAdapter.onItemClick = { selectedItem ->
+//
+//            }
+
             viewModel.getMovies(SortUtils.DEFAULT).observe(viewLifecycleOwner, { movies ->
                 if (movies != null) {
                     when (movies.status) {
@@ -73,9 +86,9 @@ class MovieFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         var sort = ""
         when (item.itemId){
-            R.id.action_az -> sort = SortUtils.AZ
-            R.id.action_za -> sort = SortUtils.ZA
-            R.id.action_default -> sort = SortUtils.DEFAULT
+            R.id.action_az -> sort = sortAZ
+            R.id.action_za -> sort = sortZA
+            R.id.action_default -> sort = sortDEFAULT
         }
         viewModel.getMovies(sort).observe(this, { movies ->
             if (movies != null) {
@@ -95,5 +108,13 @@ class MovieFragment : Fragment() {
         })
         item.isChecked = true
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onItemClick(movie: Movies) {
+        val intent = Intent(activity, DetailActivity::class.java).apply {
+                    putExtra(DetailActivity.EXTRA_ID, movie.id)
+                    putExtra(DetailActivity.EXTRA_CODE, MovieAdapter.IF_MOVIE)
+        }
+        startActivity(intent)
     }
 }

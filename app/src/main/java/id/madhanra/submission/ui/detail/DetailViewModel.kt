@@ -2,18 +2,19 @@ package id.madhanra.submission.ui.detail
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
-import id.madhanra.submission.data.source.local.entity.DetailMovieEntity
-import id.madhanra.submission.data.source.local.entity.DetailTvShowEntity
-import id.madhanra.submission.data.source.local.entity.MoviesEntity
-import id.madhanra.submission.data.source.local.entity.TvShowEntity
-import id.madhanra.submission.data.source.repository.MovieRepository
-import id.madhanra.submission.data.source.repository.TvShowRepository
-import id.madhanra.submission.vo.Resource
+import id.madhanra.submission.core.domain.model.DetailMovies
+import id.madhanra.submission.core.domain.model.DetailTvShows
+import id.madhanra.submission.core.domain.model.Movies
+import id.madhanra.submission.core.domain.model.TvShows
+import id.madhanra.submission.core.domain.usecase.MoviesUseCase
+import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
+import id.madhanra.submission.core.vo.Resource
 
 class DetailViewModel @ViewModelInject constructor(
-    private val movieRepository: MovieRepository,
-    private val tvShowRepository: TvShowRepository,
+    private val movieUseCase: MoviesUseCase,
+    private val tvShowUseCase: TvShowsUseCase,
     ): ViewModel() {
 
     private lateinit var id : String
@@ -22,23 +23,23 @@ class DetailViewModel @ViewModelInject constructor(
         this.id = id
     }
 
-    fun getDetailMovie(): LiveData<Resource<DetailMovieEntity>> = movieRepository.getDetailMovie(id.toInt())
+    fun getDetailMovie(): LiveData<Resource<DetailMovies>> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getDetailMovie(id.toInt()))
 
 
-    fun getDetailTvShow(): LiveData<Resource<DetailTvShowEntity>> = tvShowRepository.getDetailTvShow(id.toInt())
+    fun getDetailTvShow(): LiveData<Resource<DetailTvShows>> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getDetailTvShow(id.toInt()))
 
-    fun getAMovie(): LiveData<MoviesEntity> = movieRepository.getAMovie(id.toInt())
+    fun getAMovie(): LiveData<Movies> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getAMovie(id.toInt()))
 
-    fun getATvShow(): LiveData<TvShowEntity> = tvShowRepository.getATvShow(id.toInt())
+    fun getATvShow(): LiveData<TvShows> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getATvShow(id.toInt()))
 
-    fun setFavoriteMovie(movieEntity: DetailMovieEntity, aMovieEntity: MoviesEntity) {
+    fun setFavoriteMovie(movieEntity: DetailMovies, aMovieEntity: Movies) {
         val isFavorite = !movieEntity.favorite
-        movieRepository.setFavorite(aMovieEntity, isFavorite, movieEntity)
+        movieUseCase.setFavorite(aMovieEntity, isFavorite, movieEntity)
     }
 
-    fun setFavoriteTvShow(tvShowEntity: DetailTvShowEntity, aTvShowEntity: TvShowEntity) {
+    fun setFavoriteTvShow(tvShowEntity: DetailTvShows, aTvShowEntity: TvShows) {
         val isFavorite = !tvShowEntity.favorite
-        tvShowRepository.setFavorite(aTvShowEntity, isFavorite, tvShowEntity)
+        tvShowUseCase.setFavorite(aTvShowEntity, isFavorite, tvShowEntity)
     }
 
 }

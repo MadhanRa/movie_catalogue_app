@@ -2,16 +2,15 @@ package id.madhanra.submission.ui.movie
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
-import id.madhanra.submission.data.source.repository.MovieRepository
-import id.madhanra.submission.data.source.local.entity.MoviesEntity
-import id.madhanra.submission.vo.Resource
+import id.madhanra.submission.core.domain.model.Movies
+import id.madhanra.submission.core.domain.usecase.MoviesUseCase
+import id.madhanra.submission.core.vo.Resource
 
 
-class MovieViewModel @ViewModelInject constructor(private val repository: MovieRepository) : ViewModel() {
-
-
-    fun getMovies(sort: String) : LiveData<Resource<PagedList<MoviesEntity>>> = repository.getAllMovies(sort)
+class MovieViewModel @ViewModelInject constructor(private val movieUseCase: MoviesUseCase) : ViewModel() {
+    fun getMovies(sort: String) : LiveData<Resource<PagedList<Movies>>> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getAllMovies(sort))
 
 }
