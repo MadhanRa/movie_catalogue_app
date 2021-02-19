@@ -15,7 +15,7 @@ class MovieLocalDataSource @Inject constructor(private val mMovieDao: MovieDao) 
         return mMovieDao.getMovies(query)
     }
 
-    fun getDetailMovie(id : Int): Flowable<DetailMovieEntity> = mMovieDao.getDetailMovie(id)
+    fun getDetailMovie(id : Int): Flowable<List<DetailMovieEntity>> = mMovieDao.getDetailMovie(id)
 
     fun getAMovie(id: Int): Flowable<MoviesEntity> = mMovieDao.getAMovie(id)
 

@@ -1,5 +1,6 @@
 package id.madhanra.submission.ui.detail
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams

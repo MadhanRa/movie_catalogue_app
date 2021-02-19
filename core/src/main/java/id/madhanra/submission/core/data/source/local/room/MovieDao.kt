@@ -14,7 +14,7 @@ interface MovieDao {
     fun getMovies(query: SupportSQLiteQuery): DataSource.Factory<Int, MoviesEntity>
 
     @Query ("SELECT * FROM detailmovieentity WHERE movieId = :id")
-    fun getDetailMovie(id : Int): Flowable<DetailMovieEntity>
+    fun getDetailMovie(id : Int): Flowable<List<DetailMovieEntity>>
 
     @Query("SELECT * FROM moviesentities WHERE movieId = :id")
     fun getAMovie(id: Int): Flowable<MoviesEntity>

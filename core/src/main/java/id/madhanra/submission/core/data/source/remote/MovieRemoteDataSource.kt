@@ -25,7 +25,7 @@ class MovieRemoteDataSource @Inject constructor(
                 apiService.getPopularMovies(1)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .take(2)
+                        .take(1)
                         .subscribe({ moviesResponse ->
                             resultMovies.onNext(if (moviesResponse.results.isNotEmpty()) ApiResponse.success(moviesResponse.results) else ApiResponse.empty("Nothing"))
                             if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
@@ -46,7 +46,7 @@ class MovieRemoteDataSource @Inject constructor(
                 apiService.getMovieDetail(id)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .take(2)
+                        .take(1)
                         .subscribe({ response ->
                             resultMovie.onNext(if (response.title.isNotEmpty()) ApiResponse.success(response) else ApiResponse.empty("Nothing"))
                             if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {

@@ -51,21 +51,21 @@ class DetailActivity : AppCompatActivity() {
             if (code == IF_MOVIE) {
                 Log.d("Test Id",id.toString())
                 supportActionBar?.title = resources.getString(R.string.movie)
-                viewModel.getDetailMovie().observe(this, {
-                    if (it != null)
-                        Log.d("Test status",it.status.toString())
-                        when (it.status) {
+                viewModel.getDetailMovie().observe(this, { dataResponse ->
+                    if (dataResponse != null)
+                        Log.d("Test status",dataResponse.status.toString())
+                        when (dataResponse.status) {
                             Status.LOADING -> contentBinding.progressBar.visibility = View.VISIBLE
                             Status.SUCCESS -> {
                                 contentBinding.progressBar.visibility = View.GONE
-                                if (it.data != null){
-                                    Log.d("Test data",it.data.toString())
-                                    populateContentMovie(it.data!!)
-                                    val isFavorite = it.data!!.favorite
+                                if (dataResponse.data != null){
+                                    Log.d("Test data",dataResponse.data.toString())
+                                    populateContentMovie(dataResponse.data!!)
+                                    val isFavorite = dataResponse.data!!.favorite
                                     setFavoriteState(isFavorite)
                                     viewModel.getAMovie().observe(this, { aMovie ->
                                         contentBinding.favoriteButton.setOnClickListener { _ ->
-                                            viewModel.setFavoriteMovie(it.data!!, aMovie)
+                                            viewModel.setFavoriteMovie(dataResponse.data!!, aMovie)
                                         }
                                     })
                                 }

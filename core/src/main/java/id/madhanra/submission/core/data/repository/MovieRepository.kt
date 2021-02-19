@@ -68,12 +68,12 @@ class MovieRepository @Inject constructor(
     override fun getDetailMovie(id: Int): Flowable<Resource<DetailMovies>> {
         return object: NetworkBoundResource<DetailMovies, DetailMovieResponse>(appExecutors){
             override fun loadFromDb(): Flowable<DetailMovies> {
-                return movieLocalDataSource.getDetailMovie(id).map { DataMapper.mapDetailMovieEntitiesToDomain(it) }
+                return movieLocalDataSource.getDetailMovie(id).map {
+                    DataMapper.mapDetailMovieEntitiesToDomain(it)
+                }
             }
 
-            override fun shouldFetch(data: DetailMovies?): Boolean {
-                return data == null
-            }
+            override fun shouldFetch(data: DetailMovies?): Boolean = true
 
             override fun createCall(): Flowable<ApiResponse<DetailMovieResponse>> {
                 return movieRemoteDataSource.getDetailMovie(id)
