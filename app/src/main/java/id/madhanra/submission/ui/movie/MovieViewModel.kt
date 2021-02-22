@@ -9,8 +9,8 @@ import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 import id.madhanra.submission.core.vo.Resource
 
-
 class MovieViewModel @ViewModelInject constructor(private val movieUseCase: MoviesUseCase) : ViewModel() {
     fun getMovies(sort: String) : LiveData<Resource<PagedList<Movies>>> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getAllMovies(sort))
+
 
 }

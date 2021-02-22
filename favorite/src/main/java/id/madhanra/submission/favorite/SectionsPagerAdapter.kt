@@ -1,12 +1,12 @@
-package id.madhanra.submission.ui.favorite
+package id.madhanra.submission.favorite
 
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import id.madhanra.submission.R
-import id.madhanra.submission.ui.favorite.movie.FavMovieFragment
-import id.madhanra.submission.ui.favorite.tvShow.FavTvShowFragment
+import id.madhanra.submission.favorite.movie.FavMovieFragment
+import id.madhanra.submission.favorite.tvShow.FavTvShowFragment
 
 class SectionsPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
     companion object{

@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class FavMovieViewModelTest {
-    private lateinit var viewModel: FavMovieViewModel
+    private lateinit var viewModel: id.madhanra.submission.favorite.movie.FavMovieViewModel
 
     @Rule @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -35,7 +35,7 @@ class FavMovieViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = FavMovieViewModel(movieRepository)
+        viewModel = id.madhanra.submission.favorite.movie.FavMovieViewModel(movieRepository)
     }
 
     @Test

@@ -5,15 +5,15 @@ import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import id.madhanra.submission.core.data.source.local.room.MovieCatalogueDatabase
 import id.madhanra.submission.core.data.source.local.room.MovieDao
 import id.madhanra.submission.core.data.source.local.room.TvShowDao
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ApplicationComponent::class)
 class DatabaseModule {
 
     @Provides

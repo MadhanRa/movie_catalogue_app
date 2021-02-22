@@ -70,11 +70,14 @@ class TvShowRepository @Inject constructor(
         return object : NetworkBoundResource<DetailTvShows, DetailTvShowResponse>(appExecutors){
             override fun loadFromDb(): Flowable<DetailTvShows> {
                 return tvShowLocalDataSource.getDetailTvShow(id).map{
-                    DataMapper.mapDetailTvShowEntityToDomain(it)
+                    val data = if (it.isEmpty()) null else it[0]
+                    DataMapper.mapDetailTvShowEntityToDomain(data)
                 }
             }
 
-            override fun shouldFetch(data: DetailTvShows?): Boolean = true
+            override fun shouldFetch(data: DetailTvShows?): Boolean {
+                return data?.id == 0 || data == null
+            }
 
             override fun createCall(): Flowable<ApiResponse<DetailTvShowResponse>> {
                 return tvShowRemoteDataSource.getDetailTvShow(id)

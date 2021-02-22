@@ -14,7 +14,7 @@ class TvShowLocalDataSource @Inject constructor(private val mTvShowDao: TvShowDa
         return mTvShowDao.getTvShows(query)
     }
 
-    fun getDetailTvShow(id: Int): Flowable<DetailTvShowEntity> = mTvShowDao.getDetailTvShow(id)
+    fun getDetailTvShow(id: Int): Flowable<List<DetailTvShowEntity>> = mTvShowDao.getDetailTvShow(id)
 
     fun getATvShow(id: Int): Flowable<TvShowEntity> = mTvShowDao.getATvShow(id)
 

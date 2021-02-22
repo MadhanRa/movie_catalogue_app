@@ -41,8 +41,8 @@ class TvShowFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (activity != null) {
             tvShowAdapter = TvShowAdapter()
 
@@ -57,14 +57,19 @@ class TvShowFragment : Fragment() {
             viewModel.getTvShows(TvShowSortUtils.DEFAULT).observe(viewLifecycleOwner, { tvShows ->
                 if (tvShows != null) {
                     when (tvShows.status) {
-                        Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
+                        Status.LOADING -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.errorNotification.visibility = View.GONE
+                        }
                         Status.SUCCESS -> {
                             binding.progressBar.visibility = View.GONE
+                            binding.errorNotification.visibility = View.GONE
                             tvShowAdapter.submitList(tvShows.data)
                             tvShowAdapter.notifyDataSetChanged()
                         }
                         Status.ERROR -> {
                             binding.progressBar.visibility = View.GONE
+                            binding.errorNotification.visibility = View.VISIBLE
                             Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
                         }
                     }

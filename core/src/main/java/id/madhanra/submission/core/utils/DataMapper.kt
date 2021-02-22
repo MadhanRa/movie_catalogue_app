@@ -51,24 +51,19 @@ object DataMapper {
             favorite = input.favorite
     )
 
-    fun mapDetailMovieEntitiesToDomain(input: List<DetailMovieEntity>) : DetailMovies? {
-        if (input.isEmpty()){
-            return null
-        }else{
-            return DetailMovies(
-                    title = input[0].title ?: "Unknown",
-                    genres = input[0].genres ?: ArrayList(),
-                    overview = input[0].overview ?: "Unknown",
-                    runtime = input[0].runtime ?: 0,
-                    posterPath = input[0].posterPath ?: "Unknown",
-                    releaseDate = input[0].releaseDate ?: "Unknown",
-                    voteAverage = input[0].voteAverage ?: 0.0,
-                    tagLine = input[0].tagLine ?: "Unknown",
-                    id = input[0].id ?: 0,
-                    favorite = input[0].favorite ?: false
-            )
-        }
-    }
+    fun mapDetailMovieEntitiesToDomain(input: DetailMovieEntity?) : DetailMovies = DetailMovies(
+                title = input?.title ?: "Unknown",
+                genres = input?.genres ?: emptyList(),
+                overview = input?.overview ?: "Unknown",
+                runtime = input?.runtime ?: 0,
+                posterPath = input?.posterPath ?: "Unknown",
+                releaseDate = input?.releaseDate ?: "Unknown",
+                voteAverage = input?.voteAverage ?: 0.0,
+                tagLine = input?.tagLine ?: "Unknown",
+                id = input?.id ?: 0,
+                favorite = input?.favorite ?: false
+        )
+
 
     fun mapDetailMovieDomainToEntity(input: DetailMovies) =
             DetailMovieEntity(
@@ -86,14 +81,14 @@ object DataMapper {
 
     fun mapDetailTvShowEntityToDomain(input: DetailTvShowEntity?): DetailTvShows =
             DetailTvShows(
-                    genres = input?.genres ?: ArrayList(),
+                    genres = input?.genres ?: emptyList(),
                     firstAirDate = input?.firstAirDate ?: "Unknown",
                     overview = input?.overview ?: "Unknown",
                     posterPath = input?.posterPath ?: "Unknown",
                     voteAverage = input?.voteAverage ?: 0.0,
                     name = input?.name ?: "Unknown",
                     tagLine = input?.tagLine ?: "Unknown",
-                    episodeRunTime = input?.episodeRunTime ?: ArrayList(),
+                    episodeRunTime = input?.episodeRunTime ?: emptyList(),
                     id = input?.id ?: 0,
                     favorite = input?.favorite ?: false
             )

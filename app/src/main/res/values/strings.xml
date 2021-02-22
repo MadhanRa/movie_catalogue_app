@@ -22,4 +22,6 @@
     <string name="menu_az">A - Z</string>
     <string name="menu_za">Z - A</string>
     <string name="menu_default">Default</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="data_not_found">Data not found</string>
 </resources>

@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_tv_show" />
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="id.madhanra.submission.ui.favorite.FavoriteFragment"
+        android:name="id.madhanra.submission.favorite.FavoriteFragment"
         android:label="@string/favorite"
         tools:layout="@layout/fragment_favorite" />
     <fragment

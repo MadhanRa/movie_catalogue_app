@@ -14,7 +14,7 @@ interface TvShowDao {
     fun getTvShows(query: SupportSQLiteQuery): DataSource.Factory<Int, TvShowEntity>
 
     @Query("SELECT * FROM detailtvshowentity WHERE tvShowId = :id")
-    fun getDetailTvShow(id : Int): Flowable<DetailTvShowEntity>
+    fun getDetailTvShow(id : Int): Flowable<List<DetailTvShowEntity>>
 
     @Query("SELECT * FROM tvshowentities WHERE tvShowId = :id")
     fun getATvShow(id: Int): Flowable<TvShowEntity>

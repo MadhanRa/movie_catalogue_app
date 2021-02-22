@@ -43,26 +43,28 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (activity != null) {
             movieAdapter = MovieAdapter(this)
 
-//            movieAdapter.onItemClick = { selectedItem ->
-//
-//            }
 
             viewModel.getMovies(SortUtils.DEFAULT).observe(viewLifecycleOwner, { movies ->
                 if (movies != null) {
                     when (movies.status) {
-                        Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
+                        Status.LOADING -> {
+                            binding.errorNotification.visibility = View.GONE
+                            binding.progressBar.visibility = View.VISIBLE
+                        }
                         Status.SUCCESS -> {
                             binding.progressBar.visibility = View.GONE
+                            binding.errorNotification.visibility = View.GONE
                             movieAdapter.submitList(movies.data)
                             movieAdapter.notifyDataSetChanged()
                         }
                         Status.ERROR -> {
                             binding.progressBar.visibility = View.GONE
+                            binding.errorNotification.visibility = View.VISIBLE
                             Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
                         }
                     }

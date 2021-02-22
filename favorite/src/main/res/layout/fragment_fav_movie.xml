@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.favorite.tvShow.FavTvShowFragment">
+    tools:context=".movie.FavMovieFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_fav_tv_show"
+        android:id="@+id/rv_fav_movies"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -29,6 +29,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
+
+    <LinearLayout
+        android:id="@+id/nothing_notification"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="160dp"
+            android:src="@drawable/not_found"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/there_is_nothing_here"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

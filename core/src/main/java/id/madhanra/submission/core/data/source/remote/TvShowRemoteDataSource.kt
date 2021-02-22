@@ -26,7 +26,6 @@ class TvShowRemoteDataSource @Inject constructor(
                 .take(1)
                 .subscribe({ tvShowsResponse ->
                     resultTvShows.onNext(if (tvShowsResponse.results.isNotEmpty()) ApiResponse.success(tvShowsResponse.results) else ApiResponse.empty("Nothing"))
-//                    resultTvShows.value = ApiResponse.success(tvShowsResponse.results)
                     if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
                         EspressoIdlingResource.decrement()
                     }
@@ -48,7 +47,6 @@ class TvShowRemoteDataSource @Inject constructor(
                 .take(1)
                 .subscribe({ response ->
                     resultTvShow.onNext(if (response.name.isNotEmpty()) ApiResponse.success(response) else ApiResponse.empty("Nothing"))
-//                    resultTvShow.value = ApiResponse.success(response)
                     if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
                         EspressoIdlingResource.decrement()
                     }

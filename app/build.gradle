@@ -8,7 +8,7 @@ apply from: '../shared_dependencies.gradle'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "id.madhanra.submission"
@@ -41,6 +41,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    dynamicFeatures = [':favorite']
 }
 
 
@@ -57,7 +58,5 @@ dependencies {
 
     // Airbnb Lottie Animation
     implementation "com.airbnb.android:lottie:$lottieVersion"
-
-    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifeCycleVersion"
 
 }

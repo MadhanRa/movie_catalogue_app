@@ -3,7 +3,7 @@ package id.madhanra.submission.core.di
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ApplicationComponent
 import id.madhanra.submission.core.data.source.remote.MovieApi
 import id.madhanra.submission.core.data.source.remote.TvShowApi
 import okhttp3.OkHttpClient
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ApplicationComponent::class)
 class NetworkModule {
 
     companion object{

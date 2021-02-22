@@ -1,4 +1,4 @@
-package id.madhanra.submission.ui.favorite
+package id.madhanra.submission.favorite
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 import id.madhanra.submission.R
-import id.madhanra.submission.databinding.FragmentFavoriteBinding
+import id.madhanra.submission.favorite.databinding.FragmentFavoriteBinding
 
+@AndroidEntryPoint
 class FavoriteFragment : Fragment() {
 
     private var _binding : FragmentFavoriteBinding? = null
@@ -27,9 +30,8 @@ class FavoriteFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val sectionsPagerAdapter = activity?.let { SectionsPagerAdapter(it) }
         binding.viewPager.adapter = sectionsPagerAdapter
         TabLayoutMediator(binding.tabs, binding.viewPager) {tab, position->

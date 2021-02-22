@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class FavTvShowViewModelTest {
-    private lateinit var viewModel: FavTvShowViewModel
+    private lateinit var viewModel: id.madhanra.submission.favorite.tvShow.FavTvShowViewModel
 
     @Rule
     @JvmField
@@ -36,7 +36,7 @@ class FavTvShowViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = FavTvShowViewModel(tvShowRepository)
+        viewModel = id.madhanra.submission.favorite.tvShow.FavTvShowViewModel(tvShowRepository)
     }
 
     @Test

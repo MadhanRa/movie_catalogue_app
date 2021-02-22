@@ -1,4 +1,4 @@
-package id.madhanra.submission.ui.favorite.tvShow
+package id.madhanra.submission.favorite.tvShow
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,12 +10,13 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.core.ui.FavTvShowAdapter
-import id.madhanra.submission.databinding.FragmentFavTvShowBinding
+import id.madhanra.submission.favorite.databinding.FragmentFavTvShowBinding
 import id.madhanra.submission.ui.detail.DetailActivity
 
 
 @AndroidEntryPoint
 class FavTvShowFragment : Fragment() {
+
 
     private var _binding: FragmentFavTvShowBinding? = null
     private val binding get() = _binding!!
@@ -36,8 +37,8 @@ class FavTvShowFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View,savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (activity != null) {
             val tvShowAdapter = FavTvShowAdapter()
             tvShowAdapter.onItemClick = { selectedItem ->
@@ -48,9 +49,14 @@ class FavTvShowFragment : Fragment() {
                 startActivity(intent)
             }
             binding.progressBar.visibility = View.VISIBLE
-            viewModel.getFavTvShows().observe(viewLifecycleOwner, { movies ->
+            viewModel.getFavTvShows().observe(viewLifecycleOwner, { tvShow ->
                 binding.progressBar.visibility = View.GONE
-                tvShowAdapter.submitList(movies)
+                if (tvShow.isEmpty()) {
+                    binding.nothingNotification.visibility = View.VISIBLE
+                } else {
+                    binding.nothingNotification.visibility = View.GONE
+                }
+                tvShowAdapter.submitList(tvShow)
                 tvShowAdapter.notifyDataSetChanged()
             })
 

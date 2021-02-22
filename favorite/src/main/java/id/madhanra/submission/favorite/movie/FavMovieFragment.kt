@@ -1,4 +1,4 @@
-package id.madhanra.submission.ui.favorite.movie
+package id.madhanra.submission.favorite.movie
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,8 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.core.ui.FavMovieAdapter
-import id.madhanra.submission.databinding.FragmentFavMovieBinding
+import id.madhanra.submission.favorite.databinding.FragmentFavMovieBinding
 import id.madhanra.submission.ui.detail.DetailActivity
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FavMovieFragment : Fragment() {
@@ -34,8 +35,9 @@ class FavMovieFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        super.onViewCreated(view, savedInstanceState)
         if (activity != null) {
             val movieAdapter = FavMovieAdapter()
             movieAdapter.onItemClick = { selectedItem ->
@@ -49,15 +51,20 @@ class FavMovieFragment : Fragment() {
 
             viewModel.getFavMovies().observe(viewLifecycleOwner, { movies ->
                 binding.progressBar.visibility = View.GONE
+                if (movies.isEmpty()) {
+                    binding.nothingNotification.visibility = View.VISIBLE
+                } else {
+                    binding.nothingNotification.visibility = View.GONE
+                }
                 movieAdapter.submitList(movies)
                 movieAdapter.notifyDataSetChanged()
             })
-
             with(binding.rvFavMovies){
                 layoutManager = LinearLayoutManager(context)
                 setHasFixedSize(true)
                 adapter = movieAdapter
             }
+
         }
     }
 }
