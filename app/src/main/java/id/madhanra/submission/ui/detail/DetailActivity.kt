@@ -2,15 +2,17 @@ package id.madhanra.submission.ui.detail
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.Snackbar
 import id.madhanra.submission.R
 import id.madhanra.submission.core.domain.model.DetailMovies
 import id.madhanra.submission.core.domain.model.DetailTvShows
+import id.madhanra.submission.core.utils.Const
 import id.madhanra.submission.core.vo.Status
 import id.madhanra.submission.databinding.ActivityDetailBinding
+import id.madhanra.submission.utils.Utils.showToast
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class DetailActivity : AppCompatActivity() {
@@ -19,10 +21,12 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
+    private lateinit var id: String
+    private var code: Int = 0
+
     companion object{
         const val EXTRA_ID = "extra_ID"
         const val EXTRA_CODE = "extra_code"
-        const val IF_MOVIE = 100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,11 +44,10 @@ class DetailActivity : AppCompatActivity() {
 
         val extras = intent.extras
         if (extras != null) {
-            val id = extras.getInt(EXTRA_ID)
-            val code = extras.getInt(EXTRA_CODE)
-            viewModel.setSelectedItem(id.toString())
-
-            if (code == IF_MOVIE) {
+            id = extras.getInt(EXTRA_ID).toString()
+            code = extras.getInt(EXTRA_CODE)
+            viewModel.setSelectedItem(id)
+            if (code == Const.IF_MOVIE) {
                 supportActionBar?.title = resources.getString(R.string.movie)
                 viewModelMovieObserve()
             } else {
@@ -60,20 +63,28 @@ class DetailActivity : AppCompatActivity() {
                     Status.LOADING -> binding.contentDetail.progressBar.visibility = View.VISIBLE
                     Status.SUCCESS -> {
                         binding.contentDetail.progressBar.visibility = View.GONE
-                        if (dataResponse.data != null){
+                        if (dataResponse.data != null) {
                             populateContentMovie(dataResponse.data!!)
-                            val isFavorite = dataResponse.data!!.favorite
+                            var isFavorite = dataResponse.data!!.favorite
                             setFavoriteState(isFavorite)
-                            viewModel.getAMovie().observe(this, { aMovie ->
+                            viewModel.getAMovie().observe(this, {
                                 binding.contentDetail.favoriteButton.setOnClickListener { _ ->
-                                    viewModel.setFavoriteMovie(dataResponse.data!!, aMovie)
+                                    viewModel.setFavoriteMovie(dataResponse.data!!, it)
+                                    isFavorite = !isFavorite
+                                    setFavoriteState(isFavorite)
+                                    if (isFavorite) {
+                                        showToast(this, "Telah menambah ke favorit")
+                                    } else {
+                                        showToast(this, "Telah menghapus dari favorit")
+                                    }
                                 }
                             })
                         }
                     }
                     Status.ERROR -> {
                         binding.contentDetail.progressBar.visibility = View.GONE
-                        Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
+                        showSnackBar(dataResponse.message)
+                        showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
                     }
                 }
         })
@@ -88,18 +99,26 @@ class DetailActivity : AppCompatActivity() {
                         binding.contentDetail.progressBar.visibility = View.GONE
                         if (it.data != null){
                             populateContentTvShow(it.data!!)
-                            val isFavorite = it.data!!.favorite
+                            var isFavorite = it.data!!.favorite
                             setFavoriteState(isFavorite)
                             viewModel.getATvShow().observe(this, { aTvShow ->
                                 binding.contentDetail.favoriteButton.setOnClickListener { _ ->
                                     viewModel.setFavoriteTvShow(it.data!!, aTvShow)
+                                    isFavorite = !isFavorite
+                                    setFavoriteState(isFavorite)
+                                    if (isFavorite) {
+                                        showToast(this, "Telah menambah ke favorit")
+                                    } else {
+                                        showToast(this, "Telah menghapus dari favorit")
+                                    }
                                 }
                             })
                         }
                     }
                     Status.ERROR -> {
                         binding.contentDetail.progressBar.visibility = View.GONE
-                        Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
+                        showSnackBar(it.message)
+                        showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
                     }
                 }
         })
@@ -211,6 +230,13 @@ class DetailActivity : AppCompatActivity() {
             contentDetail.textOverview.text = content.overview
             contentDetail.textTagline.text = content.tagLine
         }
+    }
+    private fun showSnackBar(message: String?) {
+        val showMessage = message ?: "Unknown Error"
+        Snackbar.make(binding.root, showMessage, Snackbar.LENGTH_INDEFINITE)
+                .setAction("RETRY") {
+                    viewModel.setSelectedItem(id)
+                }.show()
     }
 
     override fun onDestroy() {

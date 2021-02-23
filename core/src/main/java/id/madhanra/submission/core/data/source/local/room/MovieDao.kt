@@ -19,17 +19,14 @@ interface MovieDao {
     @Query("SELECT * FROM moviesentities WHERE movieId = :id")
     fun getAMovie(id: Int): Flowable<MoviesEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovies(movies: List<MoviesEntity>): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDetailMovie(movie: DetailMovieEntity) : Completable
 
     @Update
-    fun updateMovies(movie: MoviesEntity)
-
-    @Update
-    fun updateDetailMovie(movie: DetailMovieEntity)
+    fun updateMovies(movie: MoviesEntity, detailMovie: DetailMovieEntity)
 
     @Query("SELECT * FROM moviesentities WHERE favored = 1")
     fun getFavoriteMovies(): Flowable<List<MoviesEntity>>

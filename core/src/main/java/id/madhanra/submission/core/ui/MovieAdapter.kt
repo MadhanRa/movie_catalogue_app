@@ -11,9 +11,9 @@ import id.madhanra.submission.core.R
 import id.madhanra.submission.core.databinding.ItemForRvBinding
 import id.madhanra.submission.core.domain.model.Movies
 
-class MovieAdapter(private val listener: OnItemClickListener) : PagedListAdapter<Movies, MovieAdapter.MovieViewHolder>(DIFF_CALLBACK){
+class MovieAdapter : PagedListAdapter<Movies, MovieAdapter.MovieViewHolder>(DIFF_CALLBACK){
 
-    val onItemClick: ((Movies) -> Unit)? = null
+    var onItemClick: ((Movies) -> Unit)? = null
 
     companion object {
         const val IF_MOVIE = 100
@@ -41,24 +41,15 @@ class MovieAdapter(private val listener: OnItemClickListener) : PagedListAdapter
     }
 
     inner class MovieViewHolder(private val binding: ItemForRvBinding): RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.root.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item : Movies? = getItem(position)
-                    if (item != null) {
-                        listener.onItemClick(item)
-                    }
-                }
-            }
-        }
-
         fun bind(movie: Movies) {
             with(binding) {
                 val releaseYear = movie.releaseDate.split("-").toTypedArray()
                 tvItemYear.text = releaseYear[0]
                 tvItemTitle.text = movie.title
                 tvItemOverview.text = movie.overview
+                itemView.setOnClickListener {
+                    onItemClick?.invoke(movie)
+                }
                 Glide.with(itemView.context)
                     .load("${movie.baseUrlPoster}${movie.posterPath}")
                     .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
@@ -67,9 +58,4 @@ class MovieAdapter(private val listener: OnItemClickListener) : PagedListAdapter
             }
         }
     }
-
-    interface OnItemClickListener {
-        fun onItemClick(movie: Movies)
-    }
-
 }

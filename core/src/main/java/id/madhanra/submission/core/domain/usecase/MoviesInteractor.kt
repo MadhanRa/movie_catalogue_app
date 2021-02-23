@@ -8,7 +8,7 @@ import id.madhanra.submission.core.vo.Resource
 import io.reactivex.Flowable
 
 class MoviesInteractor(private val moviesRepository: IMoviesRepository): MoviesUseCase {
-    override fun getAllMovies(sort: String): Flowable<Resource<PagedList<Movies>>> = moviesRepository.getAllMovies(sort)
+    override fun getAllMovies(page: Int, sort: String): Flowable<Resource<PagedList<Movies>>> = moviesRepository.getAllMovies(page, sort)
 
     override fun getDetailMovie(id: Int): Flowable<Resource<DetailMovies>> = moviesRepository.getDetailMovie(id)
 

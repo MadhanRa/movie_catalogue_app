@@ -28,7 +28,7 @@ class MovieRepository (
         private val appExecutors: AppExecutors
 ): IMoviesRepository{
 
-    override fun getAllMovies(sort: String): Flowable<Resource<PagedList<Movies>>> {
+    override fun getAllMovies(page: Int, sort: String): Flowable<Resource<PagedList<Movies>>> {
         return object: NetworkBoundResource<PagedList<Movies>, List<MoviesItem>>(appExecutors) {
             override fun loadFromDb(): Flowable<PagedList<Movies>> {
                 val config = PagedList.Config.Builder()
@@ -42,7 +42,7 @@ class MovieRepository (
             override fun shouldFetch(data: PagedList<Movies>?): Boolean = true
 
             override fun createCall(): Flowable<ApiResponse<List<MoviesItem>>> {
-                return movieRemoteDataSource.getMovies()
+                return movieRemoteDataSource.getMovies(page)
             }
 
             override fun saveCallResult(data: List<MoviesItem>) {

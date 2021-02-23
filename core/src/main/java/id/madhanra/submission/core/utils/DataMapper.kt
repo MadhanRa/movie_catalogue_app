@@ -11,14 +11,14 @@ import id.madhanra.submission.core.domain.model.TvShows
 
 object DataMapper {
 
-    fun mapMoviesEntitiesToDomain(input: MoviesEntity): Movies =
+    fun mapMoviesEntitiesToDomain(input: MoviesEntity?): Movies =
             Movies(
-                    id = input.id,
-                    overview = input.overview,
-                    title = input.title,
-                    posterPath = input.posterPath,
-                    releaseDate = input.releaseDate,
-                    favorite = input.favorite
+                    id = input?.id ?: 0,
+                    overview = input?.overview ?: "Unknown",
+                    title = input?.title ?: "Unknown",
+                    posterPath = input?.posterPath ?: "Unknown",
+                    releaseDate = input?.releaseDate ?: "Unknown",
+                    favorite = input?.favorite ?: false
             )
 
 

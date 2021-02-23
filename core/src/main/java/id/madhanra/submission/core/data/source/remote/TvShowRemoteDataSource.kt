@@ -15,11 +15,11 @@ class TvShowRemoteDataSource(
     private val apiService: TvShowApi,
     private val compositeDisposable: CompositeDisposable
 ) {
-    fun getTvShows(): Flowable<ApiResponse<List<TvShowsItem>>> {
+    fun getTvShows(page: Int): Flowable<ApiResponse<List<TvShowsItem>>> {
         EspressoIdlingResource.increment()
         val resultTvShows = PublishSubject.create<ApiResponse<List<TvShowsItem>>>()
         compositeDisposable.add(
-            apiService.getPopularTvShow(1)
+            apiService.getPopularTvShow(page)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .take(1)

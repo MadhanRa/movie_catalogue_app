@@ -7,7 +7,7 @@ import id.madhanra.submission.core.vo.Resource
 import io.reactivex.Flowable
 
 interface TvShowsUseCase {
-    fun getTvShow(sort: String): Flowable<Resource<PagedList<TvShows>>>
+    fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>>
 
     fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>>
 

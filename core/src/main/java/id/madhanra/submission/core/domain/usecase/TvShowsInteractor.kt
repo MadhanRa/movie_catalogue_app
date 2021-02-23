@@ -8,7 +8,7 @@ import id.madhanra.submission.core.vo.Resource
 import io.reactivex.Flowable
 
 class TvShowsInteractor(private val tvShowsRepository: ITvShowsRepository): TvShowsUseCase {
-    override fun getTvShow(sort: String): Flowable<Resource<PagedList<TvShows>>> = tvShowsRepository.getTvShow(sort)
+    override fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>> = tvShowsRepository.getTvShow(page, sort)
 
     override fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>> = tvShowsRepository.getDetailTvShow(id)
 

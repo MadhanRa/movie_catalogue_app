@@ -24,8 +24,7 @@ class TvShowLocalDataSource (private val mTvShowDao: TvShowDao){
     fun setFavorite(tvShow: TvShowEntity, favorite: Boolean, detailTvShow: DetailTvShowEntity) {
         tvShow.favorite = favorite
         detailTvShow.favorite = favorite
-        mTvShowDao.updateTvShow(tvShow)
-        mTvShowDao.updateDetailTvShow(detailTvShow)
+        mTvShowDao.updateTvShow(tvShow, detailTvShow)
     }
 
     fun getFavoredTvShows(): Flowable<List<TvShowEntity>> = mTvShowDao.getFavoriteTvShows()

@@ -15,11 +15,11 @@ class MovieRemoteDataSource(
         private val apiService: MovieApi,
         private val compositeDisposable: CompositeDisposable
 ){
-    fun getMovies(): Flowable<ApiResponse<List<MoviesItem>>>{
+    fun getMovies(page: Int): Flowable<ApiResponse<List<MoviesItem>>>{
         EspressoIdlingResource.increment()
         val resultMovies = PublishSubject.create<ApiResponse<List<MoviesItem>>>()
         compositeDisposable.add(
-                apiService.getPopularMovies(1)
+                apiService.getPopularMovies(page)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .take(1)

@@ -25,8 +25,7 @@ class MovieLocalDataSource (private val mMovieDao: MovieDao) {
     fun setFavorite(movie: MoviesEntity, favorite: Boolean, detailMovie: DetailMovieEntity) {
         movie.favorite = favorite
         detailMovie.favorite = favorite
-        mMovieDao.updateMovies(movie)
-        mMovieDao.updateDetailMovie(detailMovie)
+        mMovieDao.updateMovies(movie, detailMovie)
     }
 
     fun getFavoredMovies(): Flowable<List<MoviesEntity>> = mMovieDao.getFavoriteMovies()

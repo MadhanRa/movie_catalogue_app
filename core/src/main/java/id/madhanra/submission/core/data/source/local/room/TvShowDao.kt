@@ -19,17 +19,14 @@ interface TvShowDao {
     @Query("SELECT * FROM tvshowentities WHERE tvShowId = :id")
     fun getATvShow(id: Int): Flowable<TvShowEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertTvShows(tvShows: List<TvShowEntity>): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDetailTvShow(tvShow: DetailTvShowEntity): Completable
 
     @Update
-    fun updateTvShow(tvShow: TvShowEntity)
-
-    @Update
-    fun updateDetailTvShow(tvShow: DetailTvShowEntity)
+    fun updateTvShow(tvShow: TvShowEntity, tvShowDetail: DetailTvShowEntity)
 
     @Query("SELECT * FROM tvshowentities  WHERE favored = 1")
     fun getFavoriteTvShows(): Flowable<List<TvShowEntity>>

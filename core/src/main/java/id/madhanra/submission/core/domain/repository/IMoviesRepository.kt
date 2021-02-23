@@ -7,7 +7,7 @@ import id.madhanra.submission.core.vo.Resource
 import io.reactivex.Flowable
 
 interface IMoviesRepository {
-    fun getAllMovies(sort: String): Flowable<Resource<PagedList<Movies>>>
+    fun getAllMovies(page: Int, sort: String): Flowable<Resource<PagedList<Movies>>>
 
     fun getDetailMovie(id: Int): Flowable<Resource<DetailMovies>>
 

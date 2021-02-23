@@ -27,7 +27,7 @@ class TvShowRepository(
     private val appExecutors: AppExecutors
     ) : ITvShowsRepository {
 
-    override fun getTvShow(sort: String): Flowable<Resource<PagedList<TvShows>>> {
+    override fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>> {
         return object: NetworkBoundResource<PagedList<TvShows>, List<TvShowsItem>>(appExecutors){
             override fun loadFromDb(): Flowable<PagedList<TvShows>> {
                 val config = PagedList.Config.Builder()
@@ -41,7 +41,7 @@ class TvShowRepository(
             override fun shouldFetch(data: PagedList<TvShows>?): Boolean = true
 
             override fun createCall(): Flowable<ApiResponse<List<TvShowsItem>>> {
-                return tvShowRemoteDataSource.getTvShows()
+                return tvShowRemoteDataSource.getTvShows(page)
             }
 
             override fun saveCallResult(data: List<TvShowsItem>) {

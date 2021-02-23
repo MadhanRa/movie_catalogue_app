@@ -4,18 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import id.madhanra.submission.R
-import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.ui.MovieAdapter
 import id.madhanra.submission.core.utils.SortUtils
 import id.madhanra.submission.core.vo.Status
 import id.madhanra.submission.databinding.FragmentMovieBinding
 import id.madhanra.submission.ui.detail.DetailActivity
+import id.madhanra.submission.utils.Utils.showSnackBar
+import id.madhanra.submission.utils.Utils.showToast
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
+class MovieFragment : Fragment() {
 
     private val viewModel: MovieViewModel by viewModel()
 
@@ -27,6 +30,12 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
     private val binding get() = _binding!!
 
     private lateinit var movieAdapter: MovieAdapter
+
+    private lateinit var bottomNavigationView: BottomNavigationView
+
+    private var currentPage = 1
+    private var maxPage = 6
+    private var lastBottomLocation = 0
 
 
     override fun onCreateView(
@@ -40,39 +49,70 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (activity != null) {
-            movieAdapter = MovieAdapter(this)
 
+        viewModel.setPage(currentPage, SortUtils.DEFAULT)
 
-            viewModel.getMovies(SortUtils.DEFAULT).observe(viewLifecycleOwner, { movies ->
-                if (movies != null) {
-                    when (movies.status) {
-                        Status.LOADING -> {
-                            binding.errorNotification.visibility = View.GONE
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-                        Status.SUCCESS -> {
-                            binding.progressBar.visibility = View.GONE
-                            binding.errorNotification.visibility = View.GONE
-                            movieAdapter.submitList(movies.data)
-                            movieAdapter.notifyDataSetChanged()
-                        }
-                        Status.ERROR -> {
-                            binding.progressBar.visibility = View.GONE
-                            binding.errorNotification.visibility = View.VISIBLE
-                            Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+        loadUI()
+        viewModelObserver()
+    }
+
+    private fun loadUI() {
+        movieAdapter = MovieAdapter()
+        with(binding){
+            rvMovies.layoutManager = LinearLayoutManager(context)
+            rvMovies.hasFixedSize()
+            rvMovies.adapter = movieAdapter
+            rvMovies.isNestedScrollingEnabled = false
+
+            movieAdapter.onItemClick = { selectedItem ->
+                val intent = Intent(activity, DetailActivity::class.java).apply {
+                    putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
+                    putExtra(DetailActivity.EXTRA_CODE, MovieAdapter.IF_MOVIE)
                 }
-            })
-
-            with(binding.rvMovies){
-                layoutManager = LinearLayoutManager(context)
-                setHasFixedSize(true)
-                adapter = movieAdapter
+                startActivity(intent)
             }
 
+            nestedScrollMovie.setOnScrollChangeListener(
+                    NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+                        val height = (v?.getChildAt(0)?.measuredHeight ?: 0) - (v?.measuredHeight ?: 0)
+                        if (scrollY == height && scrollY > lastBottomLocation) {
+                            if (currentPage < maxPage) {
+                                viewModel.setPage(++currentPage, SortUtils.DEFAULT)
+                                lastBottomLocation = scrollY
+                                showToast(requireContext(), "Load more.")
+                            } else {
+                                showToast(requireContext(), "Reach Max")
+                            }
+                        }
+                    }
+            )
         }
+
+    }
+
+    private fun viewModelObserver() {
+        viewModel.getMovies().observe(viewLifecycleOwner, { movies ->
+            if (movies != null) {
+                when (movies.status) {
+                    Status.LOADING -> {
+                        binding.errorNotification.visibility = View.GONE
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    Status.SUCCESS -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.errorNotification.visibility = View.GONE
+                        movieAdapter.submitList(movies.data)
+                        movieAdapter.notifyDataSetChanged()
+                    }
+                    Status.ERROR -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.errorNotification.visibility = View.VISIBLE
+                        retrySnackBar(movies.message)
+                        showToast(requireContext(), "Terjadi Kesalahan")
+                    }
+                }
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -87,7 +127,8 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
             R.id.action_za -> sort = sortZA
             R.id.action_default -> sort = sortDEFAULT
         }
-        viewModel.getMovies(sort).observe(this, { movies ->
+        viewModel.setPage(currentPage, sort)
+        viewModel.getMovies().observe(this, { movies ->
             if (movies != null) {
                 when (movies.status) {
                     Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
@@ -98,8 +139,7 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
-                    }
+                        showToast(requireContext(), "Terjadi Kesalahan")                    }
                 }
             }
         })
@@ -107,14 +147,11 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onItemClick(movie: Movies) {
-        val intent = Intent(activity, DetailActivity::class.java).apply {
-                    putExtra(DetailActivity.EXTRA_ID, movie.id)
-                    putExtra(DetailActivity.EXTRA_CODE, MovieAdapter.IF_MOVIE)
+    private fun retrySnackBar(message: String?) {
+        showSnackBar(requireContext(), bottomNavigationView, message) {
+            viewModel.refresh()
         }
-        startActivity(intent)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
