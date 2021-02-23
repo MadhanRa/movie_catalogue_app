@@ -57,6 +57,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun loadUI() {
+        bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         movieAdapter = MovieAdapter()
         with(binding){
             rvMovies.layoutManager = LinearLayoutManager(context)

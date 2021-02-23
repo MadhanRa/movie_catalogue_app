@@ -57,6 +57,8 @@ class TvShowFragment : Fragment() {
     }
 
     private fun loadUI() {
+        bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+
         tvShowAdapter = TvShowAdapter()
 
         with(binding){
