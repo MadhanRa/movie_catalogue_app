@@ -20,10 +20,9 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
 
-class MovieRepository @Inject constructor(
+class MovieRepository (
         private val movieRemoteDataSource: MovieRemoteDataSource,
         private val movieLocalDataSource: MovieLocalDataSource,
         private val appExecutors: AppExecutors
@@ -105,13 +104,8 @@ class MovieRepository @Inject constructor(
         }
     }
 
-    override fun getFavoredMovies(): Flowable<PagedList<Movies>> {
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(20)
-            .setPageSize(10)
-            .build()
-        return RxPagedListBuilder(movieLocalDataSource.getFavoredMovies().map { DataMapper.mapMoviesEntitiesToDomain(it) }, config).buildFlowable(BackpressureStrategy.BUFFER)
+    override fun getFavoredMovies(): Flowable<List<Movies>> {
+        return movieLocalDataSource.getFavoredMovies().map { DataMapper.mapListMovieEntityToDomain(it) }
     }
 
     override fun setFavorite(

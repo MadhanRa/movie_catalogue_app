@@ -3,21 +3,21 @@ package id.madhanra.submission.ui.movie
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
 import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.ui.MovieAdapter
-import id.madhanra.submission.databinding.FragmentMovieBinding
 import id.madhanra.submission.core.utils.SortUtils
 import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.databinding.FragmentMovieBinding
 import id.madhanra.submission.ui.detail.DetailActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
+
+    private val viewModel: MovieViewModel by viewModel()
 
     private val sortAZ = "A-Z"
     private val sortZA = "Z-A"
@@ -25,7 +25,7 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
 
     private var _binding: FragmentMovieBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MovieViewModel by viewModels()
+
     private lateinit var movieAdapter: MovieAdapter
 
 
@@ -36,11 +36,6 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
         _binding = FragmentMovieBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -118,5 +113,12 @@ class MovieFragment : Fragment(), MovieAdapter.OnItemClickListener {
                     putExtra(DetailActivity.EXTRA_CODE, MovieAdapter.IF_MOVIE)
         }
         startActivity(intent)
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.root.removeAllViewsInLayout()
+        _binding = null
     }
 }

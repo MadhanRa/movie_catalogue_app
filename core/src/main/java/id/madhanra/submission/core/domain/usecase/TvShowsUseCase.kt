@@ -13,7 +13,7 @@ interface TvShowsUseCase {
 
     fun getATvShow(id: Int): Flowable<TvShows>
 
-    fun getFavoredTvShows(): Flowable<PagedList<TvShows>>
+    fun getFavoredTvShows(): Flowable<List<TvShows>>
 
     fun setFavorite(tvShow: TvShows, favorite: Boolean, detailTvShow: DetailTvShows)
 }

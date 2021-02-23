@@ -1,7 +1,5 @@
 package id.madhanra.submission.ui.detail
 
-import android.util.Log
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
@@ -13,7 +11,7 @@ import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
 import id.madhanra.submission.core.vo.Resource
 
-class DetailViewModel @ViewModelInject constructor(
+class DetailViewModel(
     private val movieUseCase: MoviesUseCase,
     private val tvShowUseCase: TvShowsUseCase,
     ): ViewModel() {

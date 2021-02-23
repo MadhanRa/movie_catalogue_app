@@ -1,14 +1,21 @@
 package id.madhanra.submission.favorite.tvShow
 
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.LiveDataReactiveStreams
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
 
 class FavTvShowViewModel (private val tvShowUseCase: TvShowsUseCase):
     ViewModel() {
-    fun getFavTvShows(): LiveData<PagedList<TvShows>> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getFavoredTvShows())
+    private val refreshTrigger = MutableLiveData(Unit)
+
+    private var tvShowList = refreshTrigger.switchMap {
+        LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getFavoredTvShows())
+    }
+
+    fun getFavTvShows(): LiveData<List<TvShows>> = tvShowList
+
+    fun refresh() {
+        refreshTrigger.value = Unit
+    }
 }

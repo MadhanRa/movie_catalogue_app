@@ -6,9 +6,8 @@ import id.madhanra.submission.core.data.source.local.entity.TvShowEntity
 import id.madhanra.submission.core.data.source.local.room.TvShowDao
 import id.madhanra.submission.core.utils.TvShowSortUtils
 import io.reactivex.Flowable
-import javax.inject.Inject
 
-class TvShowLocalDataSource @Inject constructor(private val mTvShowDao: TvShowDao){
+class TvShowLocalDataSource (private val mTvShowDao: TvShowDao){
     fun getAllTvShow(sort: String): DataSource.Factory<Int, TvShowEntity> {
         val query = TvShowSortUtils.getSortedQuery(sort)
         return mTvShowDao.getTvShows(query)
@@ -29,5 +28,5 @@ class TvShowLocalDataSource @Inject constructor(private val mTvShowDao: TvShowDa
         mTvShowDao.updateDetailTvShow(detailTvShow)
     }
 
-    fun getFavoredTvShows(): DataSource.Factory<Int, TvShowEntity> = mTvShowDao.getFavoriteTvShows()
+    fun getFavoredTvShows(): Flowable<List<TvShowEntity>> = mTvShowDao.getFavoriteTvShows()
 }

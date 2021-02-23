@@ -32,5 +32,5 @@ interface TvShowDao {
     fun updateDetailTvShow(tvShow: DetailTvShowEntity)
 
     @Query("SELECT * FROM tvshowentities  WHERE favored = 1")
-    fun getFavoriteTvShows(): DataSource.Factory<Int, TvShowEntity>
+    fun getFavoriteTvShows(): Flowable<List<TvShowEntity>>
 }

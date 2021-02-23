@@ -10,9 +10,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
 
-class TvShowRemoteDataSource @Inject constructor(
+class TvShowRemoteDataSource(
     private val apiService: TvShowApi,
     private val compositeDisposable: CompositeDisposable
 ) {

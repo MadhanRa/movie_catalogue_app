@@ -13,7 +13,7 @@ interface MoviesUseCase {
 
     fun getAMovie(id: Int): Flowable<Movies>
 
-    fun getFavoredMovies(): Flowable<PagedList<Movies>>
+    fun getFavoredMovies(): Flowable<List<Movies>>
 
     fun setFavorite(movie: Movies, favorite: Boolean, detailMovie: DetailMovies)
 }

@@ -1,26 +1,23 @@
 package id.madhanra.submission.ui.detail
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
-import id.madhanra.submission.databinding.ActivityDetailBinding
 import id.madhanra.submission.core.domain.model.DetailMovies
 import id.madhanra.submission.core.domain.model.DetailTvShows
 import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.databinding.ActivityDetailBinding
+import org.koin.android.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityDetailBinding
+    private val viewModel : DetailViewModel by viewModel()
 
-    private val viewModel : DetailViewModel by viewModels()
+    private lateinit var binding: ActivityDetailBinding
 
     companion object{
         const val EXTRA_ID = "extra_ID"
@@ -37,9 +34,7 @@ class DetailActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val contentBinding = binding.contentDetail
-
-        contentBinding.favoriteButton.apply {
+        binding.contentDetail.favoriteButton.apply {
             setMinAndMaxFrame(40, 100 )
         }
 
@@ -48,62 +43,66 @@ class DetailActivity : AppCompatActivity() {
             val id = extras.getInt(EXTRA_ID)
             val code = extras.getInt(EXTRA_CODE)
             viewModel.setSelectedItem(id.toString())
+
             if (code == IF_MOVIE) {
-                Log.d("Test Id",id.toString())
                 supportActionBar?.title = resources.getString(R.string.movie)
-                viewModel.getDetailMovie().observe(this, { dataResponse ->
-                    if (dataResponse != null)
-                        Log.d("Test status",dataResponse.status.toString())
-                        when (dataResponse.status) {
-                            Status.LOADING -> contentBinding.progressBar.visibility = View.VISIBLE
-                            Status.SUCCESS -> {
-                                contentBinding.progressBar.visibility = View.GONE
-                                if (dataResponse.data != null){
-                                    Log.d("Test data",dataResponse.data.toString())
-                                    populateContentMovie(dataResponse.data!!)
-                                    val isFavorite = dataResponse.data!!.favorite
-                                    setFavoriteState(isFavorite)
-                                    viewModel.getAMovie().observe(this, { aMovie ->
-                                        contentBinding.favoriteButton.setOnClickListener { _ ->
-                                            viewModel.setFavoriteMovie(dataResponse.data!!, aMovie)
-                                        }
-                                    })
-                                }
-                            }
-                            Status.ERROR -> {
-                                contentBinding.progressBar.visibility = View.GONE
-                                Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                })
+                viewModelMovieObserve()
             } else {
                 supportActionBar?.title = resources.getString(R.string.tv_show)
-                viewModel.setSelectedItem(id.toString())
-                viewModel.getDetailTvShow().observe(this, {
-                    if (it != null)
-                        when (it.status) {
-                            Status.LOADING -> contentBinding.progressBar.visibility = View.VISIBLE
-                            Status.SUCCESS -> {
-                                contentBinding.progressBar.visibility = View.GONE
-                                if (it.data != null){
-                                    populateContentTvShow(it.data!!)
-                                    val isFavorite = it.data!!.favorite
-                                    setFavoriteState(isFavorite)
-                                    viewModel.getATvShow().observe(this, { aTvShow ->
-                                        contentBinding.favoriteButton.setOnClickListener { _ ->
-                                            viewModel.setFavoriteTvShow(it.data!!, aTvShow)
-                                        }
-                                    })
-                                }
-                            }
-                            Status.ERROR -> {
-                                contentBinding.progressBar.visibility = View.GONE
-                                Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                })
+                viewModelTvShowObserve()
             }
         }
+    }
+    private fun viewModelMovieObserve(){
+        viewModel.getDetailMovie().observe(this, { dataResponse ->
+            if (dataResponse != null)
+                when (dataResponse.status) {
+                    Status.LOADING -> binding.contentDetail.progressBar.visibility = View.VISIBLE
+                    Status.SUCCESS -> {
+                        binding.contentDetail.progressBar.visibility = View.GONE
+                        if (dataResponse.data != null){
+                            populateContentMovie(dataResponse.data!!)
+                            val isFavorite = dataResponse.data!!.favorite
+                            setFavoriteState(isFavorite)
+                            viewModel.getAMovie().observe(this, { aMovie ->
+                                binding.contentDetail.favoriteButton.setOnClickListener { _ ->
+                                    viewModel.setFavoriteMovie(dataResponse.data!!, aMovie)
+                                }
+                            })
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.contentDetail.progressBar.visibility = View.GONE
+                        Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        })
+    }
+
+    private fun viewModelTvShowObserve(){
+        viewModel.getDetailTvShow().observe(this, {
+            if (it != null)
+                when (it.status) {
+                    Status.LOADING -> binding.contentDetail.progressBar.visibility = View.VISIBLE
+                    Status.SUCCESS -> {
+                        binding.contentDetail.progressBar.visibility = View.GONE
+                        if (it.data != null){
+                            populateContentTvShow(it.data!!)
+                            val isFavorite = it.data!!.favorite
+                            setFavoriteState(isFavorite)
+                            viewModel.getATvShow().observe(this, { aTvShow ->
+                                binding.contentDetail.favoriteButton.setOnClickListener { _ ->
+                                    viewModel.setFavoriteTvShow(it.data!!, aTvShow)
+                                }
+                            })
+                        }
+                    }
+                    Status.ERROR -> {
+                        binding.contentDetail.progressBar.visibility = View.GONE
+                        Toast.makeText(this, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        })
     }
 
     private fun setFavoriteState(favorite: Boolean){
@@ -152,18 +151,20 @@ class DetailActivity : AppCompatActivity() {
         if (content.voteAverage != null) {
             score = "${(content.voteAverage!! * 10).toInt()}%"
         }
-        Glide.with(this)
-            .load("${content.baseUrlPoster}${content.posterPath}")
-            .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-            .into(binding.contentDetail.imagePoster)
-        binding.contentDetail.textTitle.text = content.title
-        if (releaseYear != null)
-        binding.contentDetail.textYear.text = releaseYear[0]
-        binding.contentDetail.textGenre.text = genre
-        binding.contentDetail.textLength.text = length
-        binding.contentDetail.textUserScore.text = score
-        binding.contentDetail.textOverview.text = content.overview
-        binding.contentDetail.textTagline.text = content.tagLine
+        with(binding) {
+            Glide.with(this@DetailActivity)
+                    .load("${content.baseUrlPoster}${content.posterPath}")
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
+                    .into(contentDetail.imagePoster)
+            contentDetail.textTitle.text = content.title
+            if (releaseYear != null)
+                contentDetail.textYear.text = releaseYear[0]
+            contentDetail.textGenre.text = genre
+            contentDetail.textLength.text = length
+            contentDetail.textUserScore.text = score
+            contentDetail.textOverview.text = content.overview
+            contentDetail.textTagline.text = content.tagLine
+        }
     }
     private fun populateContentTvShow(content: DetailTvShows) {
         val firstAirYear = content.firstAirDate?.split("-")?.toTypedArray()
@@ -196,17 +197,24 @@ class DetailActivity : AppCompatActivity() {
             score = "${(content.voteAverage!! * 10).toInt()}%"
         }
 
-        Glide.with(this)
-                .load("${content.baseUrlPoster}${content.posterPath}")
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                .into(binding.contentDetail.imagePoster)
-        binding.contentDetail.textTitle.text = content.name
-        if (firstAirYear != null)
-        binding.contentDetail.textYear.text = firstAirYear[0]
-        binding.contentDetail.textGenre.text = genre
-        binding.contentDetail.textLength.text = length
-        binding.contentDetail.textUserScore.text = score
-        binding.contentDetail.textOverview.text = content.overview
-        binding.contentDetail.textTagline.text = content.tagLine
+        with(binding) {
+            Glide.with(this@DetailActivity)
+                    .load("${content.baseUrlPoster}${content.posterPath}")
+                    .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
+                    .into(contentDetail.imagePoster)
+            contentDetail.textTitle.text = content.name
+            if (firstAirYear != null)
+                contentDetail.textYear.text = firstAirYear[0]
+            contentDetail.textGenre.text = genre
+            contentDetail.textLength.text = length
+            contentDetail.textUserScore.text = score
+            contentDetail.textOverview.text = content.overview
+            contentDetail.textTagline.text = content.tagLine
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.root.removeAllViewsInLayout()
     }
 }

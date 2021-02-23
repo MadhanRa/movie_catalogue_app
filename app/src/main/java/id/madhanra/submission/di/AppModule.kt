@@ -1,20 +1,27 @@
 package id.madhanra.submission.di
 
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import id.madhanra.submission.core.domain.usecase.MoviesInteractor
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 import id.madhanra.submission.core.domain.usecase.TvShowsInteractor
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
+import id.madhanra.submission.core.utils.Const
+import id.madhanra.submission.ui.detail.DetailViewModel
+import id.madhanra.submission.ui.movie.MovieViewModel
+import id.madhanra.submission.ui.tvShow.TvShowViewModel
+import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
-@Module
-@InstallIn(ActivityComponent::class)
-abstract class AppModule {
-    @Binds
-    abstract fun provideMovieUseCase(moviesInteractor: MoviesInteractor): MoviesUseCase
+val useCaseModule = module {
+    factory<MoviesUseCase> { MoviesInteractor(get()) }
+    factory<TvShowsUseCase> { TvShowsInteractor(get()) }
+}
 
-    @Binds
-    abstract fun provideTvShowUseCase(tvShowsInteractor: TvShowsInteractor): TvShowsUseCase
+val viewModelModule = module {
+//    scope(named(Const.VIEW_MODEL)) {
+//
+//    }
+    viewModel { MovieViewModel(get()) }
+    viewModel { TvShowViewModel(get()) }
+    viewModel { DetailViewModel(get(), get()) }
 }

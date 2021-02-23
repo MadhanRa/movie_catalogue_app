@@ -3,20 +3,21 @@ package id.madhanra.submission.ui.tvShow
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
 import id.madhanra.submission.R
 import id.madhanra.submission.core.ui.TvShowAdapter
-import id.madhanra.submission.databinding.FragmentTvShowBinding
 import id.madhanra.submission.core.utils.TvShowSortUtils
 import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.databinding.FragmentTvShowBinding
 import id.madhanra.submission.ui.detail.DetailActivity
+import org.koin.android.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class TvShowFragment : Fragment() {
+
+    private val viewModel: TvShowViewModel by viewModel()
+
 
     private val sortAZ = "A-Z"
     private val sortZA = "Z-A"
@@ -24,7 +25,7 @@ class TvShowFragment : Fragment() {
 
     private var _binding: FragmentTvShowBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: TvShowViewModel by viewModels()
+
     private lateinit var tvShowAdapter: TvShowAdapter
 
     override fun onCreateView(
@@ -34,11 +35,6 @@ class TvShowFragment : Fragment() {
         _binding = FragmentTvShowBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -115,5 +111,11 @@ class TvShowFragment : Fragment() {
         })
         item.isChecked = true
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.root.removeAllViewsInLayout()
+        _binding = null
     }
 }

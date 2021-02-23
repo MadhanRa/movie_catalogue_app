@@ -20,11 +20,8 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TvShowRepository @Inject constructor(
+class TvShowRepository(
     private val tvShowRemoteDataSource: TvShowRemoteDataSource,
     private val tvShowLocalDataSource: TvShowLocalDataSource,
     private val appExecutors: AppExecutors
@@ -108,13 +105,8 @@ class TvShowRepository @Inject constructor(
     }
 
 
-    override fun getFavoredTvShows(): Flowable<PagedList<TvShows>> {
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(20)
-            .setPageSize(10)
-            .build()
-        return RxPagedListBuilder(tvShowLocalDataSource.getFavoredTvShows().map { DataMapper.mapTvShowsEntitiesToDomain(it) }, config).buildFlowable(BackpressureStrategy.BUFFER)
+    override fun getFavoredTvShows(): Flowable<List<TvShows>> {
+        return tvShowLocalDataSource.getFavoredTvShows().map { DataMapper.mapListTvShowEntityToDomain(it) }
     }
 
     override fun setFavorite(

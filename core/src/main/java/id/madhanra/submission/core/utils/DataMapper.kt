@@ -106,4 +106,14 @@ object DataMapper {
                     id = input.id,
                     favorite = input.favorite
             )
+
+    fun mapListMovieEntityToDomain(input: List<MoviesEntity>): List<Movies> =
+            input.map {
+                mapMoviesEntitiesToDomain(it)
+            }
+
+    fun mapListTvShowEntityToDomain(input: List<TvShowEntity>): List<TvShows> =
+            input.map {
+                mapTvShowsEntitiesToDomain(it)
+            }
 }

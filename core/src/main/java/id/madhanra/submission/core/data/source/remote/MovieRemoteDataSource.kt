@@ -10,11 +10,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MovieRemoteDataSource @Inject constructor(
+class MovieRemoteDataSource(
         private val apiService: MovieApi,
         private val compositeDisposable: CompositeDisposable
 ){

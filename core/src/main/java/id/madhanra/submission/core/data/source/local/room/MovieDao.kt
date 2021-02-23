@@ -32,6 +32,6 @@ interface MovieDao {
     fun updateDetailMovie(movie: DetailMovieEntity)
 
     @Query("SELECT * FROM moviesentities WHERE favored = 1")
-    fun getFavoriteMovies(): DataSource.Factory<Int, MoviesEntity>
+    fun getFavoriteMovies(): Flowable<List<MoviesEntity>>
 
 }

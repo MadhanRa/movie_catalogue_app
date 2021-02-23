@@ -1,6 +1,5 @@
 package id.madhanra.submission.ui.movie
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,7 @@ import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 import id.madhanra.submission.core.vo.Resource
 
-class MovieViewModel @ViewModelInject constructor(private val movieUseCase: MoviesUseCase) : ViewModel() {
+class MovieViewModel(private val movieUseCase: MoviesUseCase) : ViewModel() {
     fun getMovies(sort: String) : LiveData<Resource<PagedList<Movies>>> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getAllMovies(sort))
 
 

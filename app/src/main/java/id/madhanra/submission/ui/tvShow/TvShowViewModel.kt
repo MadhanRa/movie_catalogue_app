@@ -1,6 +1,5 @@
 package id.madhanra.submission.ui.tvShow
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,7 @@ import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
 import id.madhanra.submission.core.vo.Resource
 
-class TvShowViewModel @ViewModelInject constructor(private val tvShowUseCase: TvShowsUseCase) : ViewModel() {
+class TvShowViewModel (private val tvShowUseCase: TvShowsUseCase) : ViewModel() {
     fun getTvShows(sort: String) : LiveData<Resource<PagedList<TvShows>>> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getTvShow(sort))
 
 

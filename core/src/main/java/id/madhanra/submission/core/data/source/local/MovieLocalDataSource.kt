@@ -6,9 +6,8 @@ import id.madhanra.submission.core.data.source.local.entity.MoviesEntity
 import id.madhanra.submission.core.data.source.local.room.MovieDao
 import id.madhanra.submission.core.utils.SortUtils
 import io.reactivex.Flowable
-import javax.inject.Inject
 
-class MovieLocalDataSource @Inject constructor(private val mMovieDao: MovieDao) {
+class MovieLocalDataSource (private val mMovieDao: MovieDao) {
 
     fun getAllMovies(sort: String): DataSource.Factory<Int, MoviesEntity> {
         val query = SortUtils.getSortedQuery(sort)
@@ -30,5 +29,5 @@ class MovieLocalDataSource @Inject constructor(private val mMovieDao: MovieDao) 
         mMovieDao.updateDetailMovie(detailMovie)
     }
 
-    fun getFavoredMovies(): DataSource.Factory<Int, MoviesEntity> = mMovieDao.getFavoriteMovies()
+    fun getFavoredMovies(): Flowable<List<MoviesEntity>> = mMovieDao.getFavoriteMovies()
 }
