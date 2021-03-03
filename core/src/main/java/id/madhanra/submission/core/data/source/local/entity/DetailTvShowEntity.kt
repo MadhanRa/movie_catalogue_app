@@ -1,10 +1,7 @@
 package id.madhanra.submission.core.data.source.local.entity
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import id.madhanra.submission.core.data.source.remote.response.GenresItemTvShow
 
 @Entity (tableName = "detailtvshowentity")
@@ -42,5 +39,6 @@ data class DetailTvShowEntity (
     var favorite: Boolean = false
 ){
     @Embedded
+    @Ignore
     var baseUrlPoster : String = "https://image.tmdb.org/t/p/w500"
 }

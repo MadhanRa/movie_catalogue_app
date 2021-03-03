@@ -1,14 +1,11 @@
 package id.madhanra.submission.core.data.source.local.entity
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import id.madhanra.submission.core.data.source.remote.response.GenresItem
 
 @Entity (tableName = "detailmovieentity")
-data class DetailMovieEntity (
+data class DetailMovieEntity(
         @ColumnInfo(name = "movieTitle")
         val title: String?,
 
@@ -42,5 +39,6 @@ data class DetailMovieEntity (
         var favorite: Boolean = false
 ){
     @Embedded
+    @Ignore
     var baseUrlPoster : String = "https://image.tmdb.org/t/p/w500"
 }

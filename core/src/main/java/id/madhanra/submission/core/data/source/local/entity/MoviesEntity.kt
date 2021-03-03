@@ -1,10 +1,7 @@
 package id.madhanra.submission.core.data.source.local.entity
 
 import androidx.annotation.NonNull
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 
 @Entity(tableName = "moviesentities")
@@ -30,6 +27,7 @@ data class MoviesEntity (
     var favorite: Boolean = false
 ) {
     @Embedded
+    @Ignore
     var baseUrlPoster : String = "https://image.tmdb.org/t/p/w500"
 }
 
