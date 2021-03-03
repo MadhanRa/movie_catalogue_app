@@ -150,7 +150,7 @@ class TvShowFragment : Fragment() {
     }
 
     private fun retrySnackBar(message: String?) {
-        Utils.showSnackBar(requireContext(), bottomNavigationView, message) {
+        Utils.showSnackBar(bottomNavigationView, message) {
             viewModel.refresh()
         }
     }

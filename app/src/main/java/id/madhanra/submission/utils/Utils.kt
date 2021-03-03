@@ -11,7 +11,7 @@ object Utils {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    fun showSnackBar(context: Context, view: View, message: String?, runnable: Runnable) {
+    fun showSnackBar( view: View, message: String?, runnable: Runnable) {
         val showMessage = message ?: "Unknown Error"
         Snackbar.make(view, showMessage, Snackbar.LENGTH_INDEFINITE)
             .setAction("Retry") {

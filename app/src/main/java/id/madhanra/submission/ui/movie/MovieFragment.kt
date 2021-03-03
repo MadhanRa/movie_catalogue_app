@@ -148,7 +148,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun retrySnackBar(message: String?) {
-        showSnackBar(requireContext(), bottomNavigationView, message) {
+        showSnackBar(bottomNavigationView, message) {
             viewModel.refresh()
         }
     }
