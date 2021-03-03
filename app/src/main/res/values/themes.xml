@@ -26,4 +26,8 @@
     <style name="Theme.Submission.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Submission.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="splashTheme" parent="android:Theme">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
 </resources>

@@ -13,7 +13,6 @@ import id.madhanra.submission.core.data.source.remote.response.MoviesItem
 import id.madhanra.submission.core.domain.model.DetailMovies
 import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.domain.repository.IMoviesRepository
-import id.madhanra.submission.core.utils.AppExecutors
 import id.madhanra.submission.core.utils.DataMapper
 import id.madhanra.submission.core.vo.Resource
 import io.reactivex.BackpressureStrategy
@@ -24,12 +23,11 @@ import io.reactivex.schedulers.Schedulers
 
 class MovieRepository (
         private val movieRemoteDataSource: MovieRemoteDataSource,
-        private val movieLocalDataSource: MovieLocalDataSource,
-        private val appExecutors: AppExecutors
+        private val movieLocalDataSource: MovieLocalDataSource
 ): IMoviesRepository{
 
     override fun getAllMovies(page: Int, sort: String): Flowable<Resource<PagedList<Movies>>> {
-        return object: NetworkBoundResource<PagedList<Movies>, List<MoviesItem>>(appExecutors) {
+        return object: NetworkBoundResource<PagedList<Movies>, List<MoviesItem>>() {
             override fun loadFromDb(): Flowable<PagedList<Movies>> {
                 val config = PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -39,7 +37,9 @@ class MovieRepository (
                 return RxPagedListBuilder(movieLocalDataSource.getAllMovies(sort).map {DataMapper.mapMoviesEntitiesToDomain(it)}, config).buildFlowable(BackpressureStrategy.BUFFER)
             }
 
-            override fun shouldFetch(data: PagedList<Movies>?): Boolean = true
+            override fun shouldFetch(data: PagedList<Movies>?): Boolean {
+                return data == null || data.isEmpty() || data.size != page * 20
+            }
 
             override fun createCall(): Flowable<ApiResponse<List<MoviesItem>>> {
                 return movieRemoteDataSource.getMovies(page)
@@ -65,7 +65,7 @@ class MovieRepository (
     }
 
     override fun getDetailMovie(id: Int): Flowable<Resource<DetailMovies>> {
-        return object: NetworkBoundResource<DetailMovies, DetailMovieResponse>(appExecutors){
+        return object: NetworkBoundResource<DetailMovies, DetailMovieResponse>(){
             override fun loadFromDb(): Flowable<DetailMovies> {
                 return movieLocalDataSource.getDetailMovie(id).map{
                     val data = if (it.isEmpty()) null else it[0]
@@ -113,11 +113,9 @@ class MovieRepository (
         favorite: Boolean,
         detailMovie: DetailMovies
     ) {
-        appExecutors.diskIO().execute{
-            val detailMovieEntities = DataMapper.mapDetailMovieDomainToEntity(detailMovie)
-            val moviesEntities = DataMapper.mapMoviesDomainToEntity(movie)
-            movieLocalDataSource.setFavorite(moviesEntities, favorite, detailMovieEntities)
-        }
+        val detailMovieEntities = DataMapper.mapDetailMovieDomainToEntity(detailMovie)
+        val moviesEntities = DataMapper.mapMoviesDomainToEntity(movie)
+        movieLocalDataSource.setFavorite(moviesEntities, favorite, detailMovieEntities)
     }
 }
 

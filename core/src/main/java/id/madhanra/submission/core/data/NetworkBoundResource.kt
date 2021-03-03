@@ -2,7 +2,6 @@ package id.madhanra.submission.core.data
 
 import id.madhanra.submission.core.data.source.remote.ApiResponse
 import id.madhanra.submission.core.data.source.remote.StatusResponse
-import id.madhanra.submission.core.utils.AppExecutors
 import id.madhanra.submission.core.vo.Resource
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -11,7 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
-abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecutors: AppExecutors) {
+abstract class NetworkBoundResource<ResultType, RequestType> {
     private val result = PublishSubject.create<Resource<ResultType>>()
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -34,7 +33,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val mExecut
         mCompositeDisposable.add(db)
     }
 
-    protected fun onFetchFailed(){}
+    private fun onFetchFailed(){}
 
     protected abstract fun loadFromDb(): Flowable<ResultType>
 

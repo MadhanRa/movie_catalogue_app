@@ -3,9 +3,9 @@ package id.madhanra.submission.core.data.repository
 import androidx.paging.PagedList
 import androidx.paging.RxPagedListBuilder
 import id.madhanra.submission.core.data.NetworkBoundResource
+import id.madhanra.submission.core.data.source.local.TvShowLocalDataSource
 import id.madhanra.submission.core.data.source.local.entity.DetailTvShowEntity
 import id.madhanra.submission.core.data.source.local.entity.TvShowEntity
-import id.madhanra.submission.core.data.source.local.TvShowLocalDataSource
 import id.madhanra.submission.core.data.source.remote.ApiResponse
 import id.madhanra.submission.core.data.source.remote.TvShowRemoteDataSource
 import id.madhanra.submission.core.data.source.remote.response.DetailTvShowResponse
@@ -13,7 +13,6 @@ import id.madhanra.submission.core.data.source.remote.response.TvShowsItem
 import id.madhanra.submission.core.domain.model.DetailTvShows
 import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.repository.ITvShowsRepository
-import id.madhanra.submission.core.utils.AppExecutors
 import id.madhanra.submission.core.utils.DataMapper
 import id.madhanra.submission.core.vo.Resource
 import io.reactivex.BackpressureStrategy
@@ -23,12 +22,11 @@ import io.reactivex.schedulers.Schedulers
 
 class TvShowRepository(
     private val tvShowRemoteDataSource: TvShowRemoteDataSource,
-    private val tvShowLocalDataSource: TvShowLocalDataSource,
-    private val appExecutors: AppExecutors
+    private val tvShowLocalDataSource: TvShowLocalDataSource
     ) : ITvShowsRepository {
 
     override fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>> {
-        return object: NetworkBoundResource<PagedList<TvShows>, List<TvShowsItem>>(appExecutors){
+        return object: NetworkBoundResource<PagedList<TvShows>, List<TvShowsItem>>(){
             override fun loadFromDb(): Flowable<PagedList<TvShows>> {
                 val config = PagedList.Config.Builder()
                     .setEnablePlaceholders(false)
@@ -38,7 +36,9 @@ class TvShowRepository(
                 return RxPagedListBuilder(tvShowLocalDataSource.getAllTvShow(sort).map { DataMapper.mapTvShowsEntitiesToDomain(it) }, config).buildFlowable(BackpressureStrategy.BUFFER)
             }
 
-            override fun shouldFetch(data: PagedList<TvShows>?): Boolean = true
+            override fun shouldFetch(data: PagedList<TvShows>?): Boolean {
+                return data == null || data.isEmpty() || data.size != page * 20
+            }
 
             override fun createCall(): Flowable<ApiResponse<List<TvShowsItem>>> {
                 return tvShowRemoteDataSource.getTvShows(page)
@@ -64,7 +64,7 @@ class TvShowRepository(
     }
 
     override fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>> {
-        return object : NetworkBoundResource<DetailTvShows, DetailTvShowResponse>(appExecutors){
+        return object : NetworkBoundResource<DetailTvShows, DetailTvShowResponse>(){
             override fun loadFromDb(): Flowable<DetailTvShows> {
                 return tvShowLocalDataSource.getDetailTvShow(id).map{
                     val data = if (it.isEmpty()) null else it[0]
@@ -114,10 +114,8 @@ class TvShowRepository(
         favorite: Boolean,
         detailTvShow: DetailTvShows
     ) {
-        appExecutors.diskIO().execute{
-            val detailTvShowEntity = DataMapper.mapDetailTvShowDomainToEntity(detailTvShow)
-            val tvShowsEntities = DataMapper.mapTvShowsDomainToEntity(tvShow)
-            tvShowLocalDataSource.setFavorite(tvShowsEntities, favorite, detailTvShowEntity)
-        }
+        val detailTvShowEntity = DataMapper.mapDetailTvShowDomainToEntity(detailTvShow)
+        val tvShowsEntities = DataMapper.mapTvShowsDomainToEntity(tvShow)
+        tvShowLocalDataSource.setFavorite(tvShowsEntities, favorite, detailTvShowEntity)
     }
 }

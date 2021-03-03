@@ -12,7 +12,6 @@ import id.madhanra.submission.core.data.source.remote.TvShowApi
 import id.madhanra.submission.core.data.source.remote.TvShowRemoteDataSource
 import id.madhanra.submission.core.domain.repository.IMoviesRepository
 import id.madhanra.submission.core.domain.repository.ITvShowsRepository
-import id.madhanra.submission.core.utils.AppExecutors
 import io.reactivex.disposables.CompositeDisposable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -71,6 +70,6 @@ val repositoryModule = module {
     single { TvShowLocalDataSource(get()) }
     single { MovieRemoteDataSource(get(), CompositeDisposable())}
     single { TvShowRemoteDataSource(get(), CompositeDisposable())}
-    single<IMoviesRepository> { MovieRepository(get(), get(), AppExecutors()) }
-    single<ITvShowsRepository> { TvShowRepository(get(), get(), AppExecutors())}
+    single<IMoviesRepository> { MovieRepository(get(), get()) }
+    single<ITvShowsRepository> { TvShowRepository(get(), get())}
 }

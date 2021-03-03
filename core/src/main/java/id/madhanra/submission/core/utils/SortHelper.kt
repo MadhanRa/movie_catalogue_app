@@ -5,8 +5,8 @@ import androidx.sqlite.db.SimpleSQLiteQuery
 import java.lang.StringBuilder
 
 object SortUtils {
-    const val AZ = "A-Z"
-    const val ZA = "Z-A"
+    private const val AZ = "A-Z"
+    private const val ZA = "Z-A"
     const val DEFAULT = "Default"
 
     fun getSortedQuery(filter: String): SimpleSQLiteQuery {
@@ -21,9 +21,9 @@ object SortUtils {
 }
 
 object TvShowSortUtils {
-    const val AZ = "A-Z"
-    const val ZA = "Z-A"
-    const val DEFAULT = "Default"
+    private const val AZ = "A-Z"
+    private const val ZA = "Z-A"
+    private const val DEFAULT = "Default"
 
     fun getSortedQuery(filter: String): SimpleSQLiteQuery {
         val simpleQuery = StringBuilder().append("SELECT * FROM tvshowentities")

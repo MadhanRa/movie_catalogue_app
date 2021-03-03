@@ -1,7 +1,6 @@
 package id.madhanra.submission.favorite.movie
 
 import androidx.lifecycle.*
-import androidx.paging.PagedList
 import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 

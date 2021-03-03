@@ -1,9 +1,11 @@
 package id.madhanra.submission.ui.splashScreen
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import id.madhanra.submission.R
@@ -21,7 +23,15 @@ class SplashScreenActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         supportActionBar?.hide()
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         val imgAnim = AnimationUtils.loadAnimation(this, R.anim.logo_animation)
         val textAnim = AnimationUtils.loadAnimation(this, R.anim.text_animation)
@@ -29,11 +39,12 @@ class SplashScreenActivity : AppCompatActivity() {
         binding.imgLogo.animation = imgAnim
         binding.imgTextLogo.animation = textAnim
 
-        handler = Handler()
+        handler = Handler(mainLooper)
         handler.postDelayed({
             val intent = Intent (this@SplashScreenActivity, HomeActivity::class.java)
             startActivity(intent)
             finish()
         }, 4000)
     }
+    
 }

@@ -1,7 +1,6 @@
 package id.madhanra.submission.favorite.tvShow
 
 import androidx.lifecycle.*
-import androidx.paging.PagedList
 import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
 

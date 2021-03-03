@@ -11,7 +11,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import id.madhanra.submission.R
 import id.madhanra.submission.core.ui.TvShowAdapter
 import id.madhanra.submission.core.utils.SortUtils
-import id.madhanra.submission.core.utils.TvShowSortUtils
 import id.madhanra.submission.core.vo.Status
 import id.madhanra.submission.databinding.FragmentTvShowBinding
 import id.madhanra.submission.ui.detail.DetailActivity

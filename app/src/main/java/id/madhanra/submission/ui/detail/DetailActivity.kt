@@ -9,6 +9,8 @@ import com.google.android.material.snackbar.Snackbar
 import id.madhanra.submission.R
 import id.madhanra.submission.core.domain.model.DetailMovies
 import id.madhanra.submission.core.domain.model.DetailTvShows
+import id.madhanra.submission.core.domain.model.Movies
+import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.utils.Const
 import id.madhanra.submission.core.vo.Status
 import id.madhanra.submission.databinding.ActivityDetailBinding
@@ -57,6 +59,10 @@ class DetailActivity : AppCompatActivity() {
         }
     }
     private fun viewModelMovieObserve(){
+        var data : Movies? = null
+        viewModel.getAMovie().observe(this, {
+            data = it
+        })
         viewModel.getDetailMovie().observe(this, { dataResponse ->
             if (dataResponse != null)
                 when (dataResponse.status) {
@@ -64,25 +70,27 @@ class DetailActivity : AppCompatActivity() {
                     Status.SUCCESS -> {
                         binding.contentDetail.progressBar.visibility = View.GONE
                         if (dataResponse.data != null) {
-                            populateContentMovie(dataResponse.data!!)
                             var isFavorite = dataResponse.data!!.favorite
+                            populateContentMovie(dataResponse.data!!)
                             setFavoriteState(isFavorite)
-                            viewModel.getAMovie().observe(this, {
-                                binding.contentDetail.favoriteButton.setOnClickListener { _ ->
-                                    viewModel.setFavoriteMovie(dataResponse.data!!, it)
-                                    isFavorite = !isFavorite
-                                    setFavoriteState(isFavorite)
-                                    if (isFavorite) {
-                                        showToast(this, "Telah menambah ke favorit")
-                                    } else {
-                                        showToast(this, "Telah menghapus dari favorit")
-                                    }
+                            binding.contentDetail.favoriteButton.setOnClickListener { _ ->
+                                data?.let { viewModel.setFavoriteMovie(dataResponse.data!!, it) }
+                                isFavorite = !isFavorite
+                                setFavoriteState(isFavorite)
+                                if (isFavorite) {
+                                    showToast(this, "Telah menambah ke favorit")
+                                } else {
+                                    showToast(this, "Telah menghapus dari favorit")
                                 }
-                            })
+                            }
                         }
                     }
                     Status.ERROR -> {
-                        binding.contentDetail.progressBar.visibility = View.GONE
+                        with(binding.contentDetail) {
+                            progressBar.visibility = View.GONE
+                            detailViewContent.visibility = View.GONE
+                            errorNotification.visibility = View.VISIBLE
+                        }
                         showSnackBar(dataResponse.message)
                         showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
                     }
@@ -91,6 +99,10 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun viewModelTvShowObserve(){
+        var data : TvShows? = null
+        viewModel.getATvShow().observe(this, { aTvShow ->
+            data = aTvShow
+        })
         viewModel.getDetailTvShow().observe(this, {
             if (it != null)
                 when (it.status) {
@@ -98,25 +110,27 @@ class DetailActivity : AppCompatActivity() {
                     Status.SUCCESS -> {
                         binding.contentDetail.progressBar.visibility = View.GONE
                         if (it.data != null){
-                            populateContentTvShow(it.data!!)
                             var isFavorite = it.data!!.favorite
+                            populateContentTvShow(it.data!!)
                             setFavoriteState(isFavorite)
-                            viewModel.getATvShow().observe(this, { aTvShow ->
-                                binding.contentDetail.favoriteButton.setOnClickListener { _ ->
-                                    viewModel.setFavoriteTvShow(it.data!!, aTvShow)
-                                    isFavorite = !isFavorite
-                                    setFavoriteState(isFavorite)
-                                    if (isFavorite) {
-                                        showToast(this, "Telah menambah ke favorit")
-                                    } else {
-                                        showToast(this, "Telah menghapus dari favorit")
-                                    }
+                            binding.contentDetail.favoriteButton.setOnClickListener { _ ->
+                                data?.let { it1 -> viewModel.setFavoriteTvShow(it.data!!, it1) }
+                                isFavorite = !isFavorite
+                                setFavoriteState(isFavorite)
+                                if (isFavorite) {
+                                    showToast(this, "Telah menambah ke favorit")
+                                } else {
+                                    showToast(this, "Telah menghapus dari favorit")
                                 }
-                            })
+                            }
                         }
                     }
                     Status.ERROR -> {
-                        binding.contentDetail.progressBar.visibility = View.GONE
+                        with(binding.contentDetail) {
+                            progressBar.visibility = View.GONE
+                            detailViewContent.visibility = View.GONE
+                            errorNotification.visibility = View.VISIBLE
+                        }
                         showSnackBar(it.message)
                         showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
                     }
@@ -170,19 +184,19 @@ class DetailActivity : AppCompatActivity() {
         if (content.voteAverage != null) {
             score = "${(content.voteAverage!! * 10).toInt()}%"
         }
-        with(binding) {
+        with(binding.contentDetail) {
             Glide.with(this@DetailActivity)
                     .load("${content.baseUrlPoster}${content.posterPath}")
                     .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                    .into(contentDetail.imagePoster)
-            contentDetail.textTitle.text = content.title
+                    .into(imagePoster)
+            textTitle.text = content.title
             if (releaseYear != null)
-                contentDetail.textYear.text = releaseYear[0]
-            contentDetail.textGenre.text = genre
-            contentDetail.textLength.text = length
-            contentDetail.textUserScore.text = score
-            contentDetail.textOverview.text = content.overview
-            contentDetail.textTagline.text = content.tagLine
+                textYear.text = releaseYear[0]
+            textGenre.text = genre
+            textLength.text = length
+            textUserScore.text = score
+            textOverview.text = content.overview
+            textTagline.text = content.tagLine
         }
     }
     private fun populateContentTvShow(content: DetailTvShows) {
@@ -216,19 +230,19 @@ class DetailActivity : AppCompatActivity() {
             score = "${(content.voteAverage!! * 10).toInt()}%"
         }
 
-        with(binding) {
+        with(binding.contentDetail) {
             Glide.with(this@DetailActivity)
                     .load("${content.baseUrlPoster}${content.posterPath}")
                     .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                    .into(contentDetail.imagePoster)
-            contentDetail.textTitle.text = content.name
+                    .into(imagePoster)
+            textTitle.text = content.name
             if (firstAirYear != null)
-                contentDetail.textYear.text = firstAirYear[0]
-            contentDetail.textGenre.text = genre
-            contentDetail.textLength.text = length
-            contentDetail.textUserScore.text = score
-            contentDetail.textOverview.text = content.overview
-            contentDetail.textTagline.text = content.tagLine
+                textYear.text = firstAirYear[0]
+            textGenre.text = genre
+            textLength.text = length
+            textUserScore.text = score
+            textOverview.text = content.overview
+            textTagline.text = content.tagLine
         }
     }
     private fun showSnackBar(message: String?) {
