@@ -24,5 +24,4 @@
     <string name="menu_default">Default</string>
     <string name="title_favorite">Favorite</string>
     <string name="data_not_found">Data not found</string>
-    <string name="image_for_data_not_found">Image for data not found</string>
 </resources>

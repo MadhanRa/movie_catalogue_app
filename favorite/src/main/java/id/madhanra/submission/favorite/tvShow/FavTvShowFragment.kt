@@ -70,9 +70,9 @@ class FavTvShowFragment : Fragment() {
         viewModel.getFavTvShows().observe(viewLifecycleOwner, { tvShow ->
             binding.progressBar.visibility = View.GONE
             if (tvShow.isEmpty()) {
-                binding.nothingNotification.visibility = View.VISIBLE
+                binding.viewEmpty.root.visibility= View.VISIBLE
             } else {
-                binding.nothingNotification.visibility = View.GONE
+                binding.viewEmpty.root.visibility = View.GONE
             }
             tvShowAdapter.setList(tvShow as ArrayList<TvShows>)
         })

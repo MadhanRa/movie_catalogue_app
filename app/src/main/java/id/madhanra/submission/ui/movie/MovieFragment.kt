@@ -95,18 +95,18 @@ class MovieFragment : Fragment() {
             if (movies != null) {
                 when (movies.status) {
                     Status.LOADING -> {
-                        binding.errorNotification.visibility = View.GONE
+                        binding.viewError.root.visibility = View.GONE
                         binding.progressBar.visibility = View.VISIBLE
                     }
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.GONE
+                        binding.viewError.root.visibility = View.GONE
                         movieAdapter.submitList(movies.data)
                         movieAdapter.notifyDataSetChanged()
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.VISIBLE
+                        binding.viewError.root.visibility = View.VISIBLE
                         retrySnackBar(movies.message)
                         showToast(requireContext(), "Terjadi Kesalahan")
                     }

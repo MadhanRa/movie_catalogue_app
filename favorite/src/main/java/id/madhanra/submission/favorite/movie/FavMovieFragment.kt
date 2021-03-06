@@ -68,9 +68,9 @@ class FavMovieFragment : Fragment() {
         viewModel.getFavMovies().observe(viewLifecycleOwner, { movies ->
             binding.progressBar.visibility = View.GONE
             if (movies.isEmpty()) {
-                binding.nothingNotification.visibility = View.VISIBLE
+                binding.viewEmpty.root.visibility = View.VISIBLE
             } else {
-                binding.nothingNotification.visibility = View.GONE
+                binding.viewEmpty.root.visibility = View.GONE
             }
             movieAdapter.setList(movies as ArrayList<Movies>)
         })

@@ -22,6 +22,7 @@
             android:id="@+id/image_poster"
             android:layout_width="300dp"
             android:layout_height="420dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/image_poster_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -200,30 +201,12 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <LinearLayout
-        android:id="@+id/error_notification"
-        android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="wrap_content"
+    <include
+        android:id="@+id/view_error"
+        layout="@layout/view_error"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <ImageView
-            android:contentDescription="@string/image_for_data_not_found"
-            android:layout_width="200dp"
-            android:layout_height="160dp"
-            android:src="@drawable/not_found"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/data_not_found"
-            android:layout_gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
-
-
-
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

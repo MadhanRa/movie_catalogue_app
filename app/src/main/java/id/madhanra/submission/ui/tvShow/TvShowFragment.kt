@@ -97,17 +97,17 @@ class TvShowFragment : Fragment() {
                 when (tvShows.status) {
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE
-                        binding.errorNotification.visibility = View.GONE
+                        binding.viewError.root.visibility = View.GONE
                     }
                     Status.SUCCESS -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.GONE
+                        binding.viewError.root.visibility = View.GONE
                         tvShowAdapter.submitList(tvShows.data)
                         tvShowAdapter.notifyDataSetChanged()
                     }
                     Status.ERROR -> {
                         binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.VISIBLE
+                        binding.viewError.root.visibility = View.VISIBLE
                         retrySnackBar(tvShows.message)
                         showToast(requireContext(), "Terjadi Kesalahan")
                     }

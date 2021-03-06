@@ -21,8 +21,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -55,7 +59,6 @@ dependencies {
     // viewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifeCycleVersion"
 
-    // Airbnb Lottie Animation
-    implementation "com.airbnb.android:lottie:$lottieVersion"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
 
 }

@@ -13,7 +13,7 @@ import org.koin.core.context.loadKoinModules
 
 class FavoriteFragment : Fragment() {
 
-
+    private var mediator : TabLayoutMediator? = null
     private var _binding : FragmentFavoriteBinding? = null
     private val binding get() = _binding!!
 
@@ -32,16 +32,20 @@ class FavoriteFragment : Fragment() {
 
         val sectionsPagerAdapter = activity?.let { SectionsPagerAdapter(it) }
         binding.viewPager.adapter = sectionsPagerAdapter
-        TabLayoutMediator(binding.tabs, binding.viewPager) {tab, position->
+        mediator = TabLayoutMediator(binding.tabs, binding.viewPager) {tab, position->
             when(position) {
                 0 -> tab.text = resources.getString(R.string.movie_fav)
                 1 -> tab.text = resources.getString(R.string.tv_show_fav)
             }
-        }.attach()
+        }
+        mediator?.attach()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mediator?.detach()
+        mediator = null
+        binding.viewPager.adapter = null
         binding.root.removeAllViewsInLayout()
         _binding = null
     }

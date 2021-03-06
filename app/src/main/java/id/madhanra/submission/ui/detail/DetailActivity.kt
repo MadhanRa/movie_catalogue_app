@@ -89,7 +89,7 @@ class DetailActivity : AppCompatActivity() {
                         with(binding.contentDetail) {
                             progressBar.visibility = View.GONE
                             detailViewContent.visibility = View.GONE
-                            errorNotification.visibility = View.VISIBLE
+                            viewError.root.visibility = View.VISIBLE
                         }
                         showSnackBar(dataResponse.message)
                         showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
@@ -129,7 +129,7 @@ class DetailActivity : AppCompatActivity() {
                         with(binding.contentDetail) {
                             progressBar.visibility = View.GONE
                             detailViewContent.visibility = View.GONE
-                            errorNotification.visibility = View.VISIBLE
+                            viewError.root.visibility = View.VISIBLE
                         }
                         showSnackBar(it.message)
                         showToast(this, "Terjadi kesalahan,\n cek koneksi internet anda")
