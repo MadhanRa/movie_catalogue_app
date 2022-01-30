@@ -1,21 +1,21 @@
 package id.madhanra.submission.core.domain.usecase
 
-import androidx.paging.PagedList
-import id.madhanra.submission.core.domain.model.DetailTvShows
-import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.repository.ITvShowsRepository
-import id.madhanra.submission.core.vo.Resource
-import io.reactivex.Flowable
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import kotlinx.coroutines.flow.Flow
 
 class TvShowsInteractor(private val tvShowsRepository: ITvShowsRepository): TvShowsUseCase {
-    override fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>> = tvShowsRepository.getTvShow(page, sort)
+    override fun getAllTvShows(page: Int): Flow<Resource<List<Show>>> = tvShowsRepository.getAllTvShows(page)
 
-    override fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>> = tvShowsRepository.getDetailTvShow(id)
+    override fun getDetailTvShow(id: String): Flow<Resource<Show>> = tvShowsRepository.getDetailTvShow(id)
 
-    override fun getATvShow(id: Int): Flowable<TvShows> = tvShowsRepository.getATvShow(id)
+    override fun getFavoredTvShows(): Flow<Resource<List<Show>>> = tvShowsRepository.getFavoredTvShows()
 
-    override fun getFavoredTvShows(): Flowable<List<TvShows>> = tvShowsRepository.getFavoredTvShows()
+    override fun getSimilarTvShows(id: String): Flow<Resource<List<Show>>> = tvShowsRepository.getSimilarTvShows(id)
 
-    override fun setFavorite(tvShow: TvShows, favorite: Boolean, detailTvShow: DetailTvShows) = tvShowsRepository.setFavorite(tvShow, favorite, detailTvShow)
+    override fun searchTvShow(keyword: String): Flow<Resource<List<Show>>> = tvShowsRepository.searchTvShow(keyword)
+
+    override suspend fun setFavorite(show: Show) = tvShowsRepository.setFavorite(show)
 
 }

@@ -1,19 +1,19 @@
 package id.madhanra.submission.core.domain.usecase
 
-import androidx.paging.PagedList
-import id.madhanra.submission.core.domain.model.DetailTvShows
-import id.madhanra.submission.core.domain.model.TvShows
-import id.madhanra.submission.core.vo.Resource
-import io.reactivex.Flowable
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import kotlinx.coroutines.flow.Flow
 
 interface TvShowsUseCase {
-    fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>>
+    fun getAllTvShows(page: Int): Flow<Resource<List<Show>>>
 
-    fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>>
+    fun getDetailTvShow(id: String): Flow<Resource<Show>>
 
-    fun getATvShow(id: Int): Flowable<TvShows>
+    fun getFavoredTvShows(): Flow<Resource<List<Show>>>
 
-    fun getFavoredTvShows(): Flowable<List<TvShows>>
+    fun getSimilarTvShows(id: String): Flow<Resource<List<Show>>>
 
-    fun setFavorite(tvShow: TvShows, favorite: Boolean, detailTvShow: DetailTvShows)
+    fun searchTvShow(keyword: String): Flow<Resource<List<Show>>>
+
+    suspend fun setFavorite(show: Show)
 }

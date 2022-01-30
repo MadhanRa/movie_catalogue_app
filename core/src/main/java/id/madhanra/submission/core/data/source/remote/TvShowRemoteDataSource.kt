@@ -1,59 +1,82 @@
 package id.madhanra.submission.core.data.source.remote
 
-import android.util.Log
-import id.madhanra.submission.core.data.source.remote.response.DetailTvShowResponse
 import id.madhanra.submission.core.data.source.remote.response.TvShowsItem
+import id.madhanra.submission.core.data.source.remote.retrofit.TvShowApi
+import id.madhanra.submission.core.utils.Const.Companion.NO_INTERNET
 import id.madhanra.submission.core.utils.EspressoIdlingResource
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import java.lang.Exception
 
 class TvShowRemoteDataSource(
-    private val apiService: TvShowApi,
-    private val compositeDisposable: CompositeDisposable
+    private val apiService: TvShowApi
 ) {
-    fun getTvShows(page: Int): Flowable<ApiResponse<List<TvShowsItem>>> {
+
+    fun getTvShows(page: Int): Flow<ApiResponse<List<TvShowsItem>>> {
         EspressoIdlingResource.increment()
-        val resultTvShows = PublishSubject.create<ApiResponse<List<TvShowsItem>>>()
-        compositeDisposable.add(
-            apiService.getPopularTvShow(page)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .take(1)
-                .subscribe({ tvShowsResponse ->
-                    resultTvShows.onNext(if (tvShowsResponse.results.isNotEmpty()) ApiResponse.success(tvShowsResponse.results) else ApiResponse.empty("Nothing"))
-                    if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
-                        EspressoIdlingResource.decrement()
-                    }
-                }, {
-                    resultTvShows.onNext(ApiResponse.error(it.message.toString()))
-                    Log.e("GetTvShows ", "onFailure: $it")
-                })
-        )
-        return resultTvShows.toFlowable(BackpressureStrategy.BUFFER)
+        return flow {
+            try {
+                val response = apiService.getPopularTvShow(page = page)
+                val data = response.tvShowsItem
+
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
-    fun getDetailTvShow(id: Int): Flowable<ApiResponse<DetailTvShowResponse>>{
+    fun getDetailTvShow(id: String): Flow<ApiResponse<TvShowsItem>>{
         EspressoIdlingResource.increment()
-        val resultTvShow = PublishSubject.create<ApiResponse<DetailTvShowResponse>>()
-        compositeDisposable.add(
-            apiService.getTvShowDetail(id)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .take(1)
-                .subscribe({ response ->
-                    resultTvShow.onNext(if (response.name.isNotEmpty()) ApiResponse.success(response) else ApiResponse.empty("Nothing"))
-                    if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
-                        EspressoIdlingResource.decrement()
-                    }
-                }, {
-                    resultTvShow.onNext(ApiResponse.error(it.message.toString()))
-                    Log.e("getDetailTvShow ", "onFailure: $it")
-                })
-        )
-        return resultTvShow.toFlowable(BackpressureStrategy.BUFFER)
+        return flow {
+            try {
+                val response = apiService.getTvShowDetail(id)
+                emit(ApiResponse.Success(response))
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun getSimilarTvShows(id: String): Flow<ApiResponse<List<TvShowsItem>>> {
+        EspressoIdlingResource.increment()
+        return flow {
+            try {
+                val response = apiService.getSimilarTvShow(id)
+                val data = response.tvShowsItem
+
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun searchTvShows(keyword: String): Flow<ApiResponse<List<TvShowsItem>>> {
+        EspressoIdlingResource.increment()
+        return flow {
+            try {
+                val response = apiService.searchTvShow(keyword = keyword)
+                val data = response.tvShowsItem
+
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 }

@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version = "1.4.30"
+        kotlin_version = "1.6.10"
         retrofitVersion = '2.9.0'
         roomVersion = '2.2.6'
         lottieVersion = '3.6.1'
@@ -21,19 +21,17 @@ buildscript {
         mockitoVersion = '3.1.0'
         archTestingVersion = '2.1.0'
         mockitoKotlinVersion = '2.2.0'
-        rxKotlinVersion = '2.2.0'
-        rxAndroidVersion = '2.1.1'
-        lifeCycleVersion = '2.3.0'
-        rxRetrofitVersion = '2.5.0'
+        lifeCycleVersion = '2.4.0'
         loggingIntercepVersion = '4.9.0'
         koinVersion = '2.1.6'
+        kotlin_coroutines_version = '1.5.0'
     }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -43,7 +41,9 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+
+        maven { url 'https://jitpack.io' }
     }
 }
 

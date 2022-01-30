@@ -1,59 +1,79 @@
 package id.madhanra.submission.core.data.source.remote
 
-import android.util.Log
-import id.madhanra.submission.core.data.source.remote.response.DetailMovieResponse
 import id.madhanra.submission.core.data.source.remote.response.MoviesItem
+import id.madhanra.submission.core.data.source.remote.retrofit.MovieApi
+import id.madhanra.submission.core.utils.Const.Companion.NO_INTERNET
 import id.madhanra.submission.core.utils.EspressoIdlingResource
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import java.lang.Exception
 
 class MovieRemoteDataSource(
-        private val apiService: MovieApi,
-        private val compositeDisposable: CompositeDisposable
+        private val apiService: MovieApi
 ){
-    fun getMovies(page: Int): Flowable<ApiResponse<List<MoviesItem>>>{
+
+    suspend fun getMovies(page: Int): Flow<ApiResponse<List<MoviesItem>>> {
         EspressoIdlingResource.increment()
-        val resultMovies = PublishSubject.create<ApiResponse<List<MoviesItem>>>()
-        compositeDisposable.add(
-                apiService.getPopularMovies(page)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .take(1)
-                        .subscribe({ moviesResponse ->
-                            resultMovies.onNext(if (moviesResponse.results.isNotEmpty()) ApiResponse.success(moviesResponse.results) else ApiResponse.empty("Nothing"))
-                            if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
-                                EspressoIdlingResource.decrement()
-                            }
-                        }, { errorResponse ->
-                            resultMovies.onNext(ApiResponse.error(errorResponse.message.toString()))
-                            Log.e("GetMovies", errorResponse.toString())
-                        })
-        )
-        return resultMovies.toFlowable(BackpressureStrategy.BUFFER)
+        return flow {
+            try {
+                val response = apiService.getPopularMovies(page = page)
+                val data = response.moviesItem
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 
-    fun getDetailMovie(id: Int): Flowable<ApiResponse<DetailMovieResponse>>{
+    fun getDetailMovie(id: String): Flow<ApiResponse<MoviesItem>>{
         EspressoIdlingResource.increment()
-        val resultMovie = PublishSubject.create<ApiResponse<DetailMovieResponse>>()
-        compositeDisposable.add(
-                apiService.getMovieDetail(id)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .take(1)
-                        .subscribe({ response ->
-                            resultMovie.onNext(if (response.title.isNotEmpty()) ApiResponse.success(response) else ApiResponse.empty("Nothing"))
-                            if (!EspressoIdlingResource.espressoTestIdlingResource.isIdleNow) {
-                                EspressoIdlingResource.decrement()
-                            }
-                        },{ errorResponse ->
-                            resultMovie.onNext(ApiResponse.error(errorResponse.message.toString()))
-                            Log.e("GetDetailMovie ", errorResponse.toString())
-                        })
-        )
-        return resultMovie.toFlowable(BackpressureStrategy.BUFFER)
+        return flow {
+            try {
+                val response = apiService.getMovieDetail(id)
+                emit(ApiResponse.Success(response))
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun getSimilarMovies(id: String): Flow<ApiResponse<List<MoviesItem>>> {
+        return flow {
+            try {
+                val response = apiService.getSimilarMovies(id)
+                val data = response.moviesItem
+
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    fun searchMovies(keyword: String): Flow<ApiResponse<List<MoviesItem>>> {
+        return flow {
+            try {
+                val response = apiService.searchMovie(keyword = keyword)
+                val data = response.moviesItem
+
+                if (data.isNotEmpty()) {
+                    emit(ApiResponse.Success(data))
+                } else {
+                    emit(ApiResponse.Empty)
+                }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(NO_INTERNET))
+            }
+        }.flowOn(Dispatchers.IO)
     }
 }

@@ -1,121 +1,137 @@
 package id.madhanra.submission.core.data.repository
 
-import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
+import id.madhanra.submission.core.data.LocalResource
 import id.madhanra.submission.core.data.NetworkBoundResource
-import id.madhanra.submission.core.data.source.local.TvShowLocalDataSource
-import id.madhanra.submission.core.data.source.local.entity.DetailTvShowEntity
-import id.madhanra.submission.core.data.source.local.entity.TvShowEntity
+import id.madhanra.submission.core.data.RemoteResource
 import id.madhanra.submission.core.data.source.remote.ApiResponse
 import id.madhanra.submission.core.data.source.remote.TvShowRemoteDataSource
-import id.madhanra.submission.core.data.source.remote.response.DetailTvShowResponse
 import id.madhanra.submission.core.data.source.remote.response.TvShowsItem
-import id.madhanra.submission.core.domain.model.DetailTvShows
-import id.madhanra.submission.core.domain.model.TvShows
 import id.madhanra.submission.core.domain.repository.ITvShowsRepository
 import id.madhanra.submission.core.utils.DataMapper
-import id.madhanra.submission.core.vo.Resource
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.data.source.local.LocalDataSource
+import id.madhanra.submission.core.data.source.local.entity.ShowEntity
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.utils.Const
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class TvShowRepository(
-    private val tvShowRemoteDataSource: TvShowRemoteDataSource,
-    private val tvShowLocalDataSource: TvShowLocalDataSource
-    ) : ITvShowsRepository {
+    private val remoteDataSource: TvShowRemoteDataSource,
+    private val localDataSource: LocalDataSource
+) : ITvShowsRepository {
 
-    override fun getTvShow(page: Int, sort: String): Flowable<Resource<PagedList<TvShows>>> {
-        return object: NetworkBoundResource<PagedList<TvShows>, List<TvShowsItem>>(){
-            override fun loadFromDb(): Flowable<PagedList<TvShows>> {
-                val config = PagedList.Config.Builder()
-                    .setEnablePlaceholders(false)
-                    .setInitialLoadSizeHint(20)
-                    .setPageSize(10)
-                    .build()
-                return RxPagedListBuilder(tvShowLocalDataSource.getAllTvShow(sort).map { DataMapper.mapTvShowsEntitiesToDomain(it) }, config).buildFlowable(BackpressureStrategy.BUFFER)
-            }
-
-            override fun shouldFetch(data: PagedList<TvShows>?): Boolean {
-                return data == null || data.isEmpty() || data.size != page * 20
-            }
-
-            override fun createCall(): Flowable<ApiResponse<List<TvShowsItem>>> {
-                return tvShowRemoteDataSource.getTvShows(page)
-            }
-
-            override fun saveCallResult(data: List<TvShowsItem>) {
-                val tvShowList = ArrayList<TvShowEntity>()
-
-                data.forEach {
-                    val tvShowEntity = TvShowEntity(
-                        it.id,
-                        it.name,
-                        it.firstAirDate,
-                        it.overview,
-                        it.posterPath
-                    )
-                    tvShowList.add(tvShowEntity)
-                }
-                tvShowLocalDataSource.insertTvShows(tvShowList).subscribeOn(Schedulers.io()).observeOn(
-                    AndroidSchedulers.mainThread()).subscribe()
-            }
-        }.asFlowable()
-    }
-
-    override fun getDetailTvShow(id: Int): Flowable<Resource<DetailTvShows>> {
-        return object : NetworkBoundResource<DetailTvShows, DetailTvShowResponse>(){
-            override fun loadFromDb(): Flowable<DetailTvShows> {
-                return tvShowLocalDataSource.getDetailTvShow(id).map{
-                    val data = if (it.isEmpty()) null else it[0]
-                    DataMapper.mapDetailTvShowEntityToDomain(data)
+    override fun getAllTvShows(page: Int): Flow<Resource<List<Show>>> {
+        return object : NetworkBoundResource<List<Show>, List<TvShowsItem>>() {
+            override fun loadFromDb(): Flow<List<Show>> {
+                return localDataSource.getAllTvShow(page * 20).map {
+                    DataMapper.mapListEntityToDomain(it)
                 }
             }
 
-            override fun shouldFetch(data: DetailTvShows?): Boolean {
-                return data?.id == 0 || data == null
+            override fun shouldFetch(data: List<Show>?): Boolean =
+                data == null || data.isEmpty() || data.size != page * 20
+
+            override suspend fun createCall(): Flow<ApiResponse<List<TvShowsItem>>> =
+                remoteDataSource.getTvShows(page)
+
+            override suspend fun saveCallResult(data: List<TvShowsItem>) {
+                val tvShowList = ArrayList<ShowEntity>()
+
+                data.map {
+                    val tvShow = DataMapper.mapTvShowResponseToEntity(it)
+                    tvShowList.add(tvShow)
+                }
+
+                localDataSource.insertShow(tvShowList)
+            }
+        }.asFlow()
+    }
+
+    override fun getDetailTvShow(id: String): Flow<Resource<Show>> {
+        return object : NetworkBoundResource<Show, TvShowsItem>() {
+            override fun loadFromDb(): Flow<Show> {
+                return localDataSource.getShowById(id).map {
+                    DataMapper.mapEntityToDomain(it)
+                }
             }
 
-            override fun createCall(): Flowable<ApiResponse<DetailTvShowResponse>> {
-                return tvShowRemoteDataSource.getDetailTvShow(id)
+            override fun shouldFetch(data: Show?): Boolean =
+                data == null || data.id == Const.UNKNOWN_VALUE
+
+            override suspend fun createCall(): Flow<ApiResponse<TvShowsItem>> =
+                remoteDataSource.getDetailTvShow(id)
+
+            override suspend fun saveCallResult(data: TvShowsItem) {
+                val tvShow = DataMapper.mapTvShowResponseToEntity(data)
+                localDataSource.insertShow(listOf(tvShow))
+            }
+        }.asFlow()
+    }
+
+    override fun getFavoredTvShows(): Flow<Resource<List<Show>>> {
+        return object : LocalResource<List<Show>>() {
+            override fun loadFromDB(): Flow<List<Show>> {
+                return localDataSource.getFavoredTvShow().map {
+                    DataMapper.mapListEntityToDomain(it)
+                }
+            }
+        }.asFlow()
+    }
+
+    override fun getSimilarTvShows(id: String): Flow<Resource<List<Show>>> {
+        return object : RemoteResource<List<Show>, List<TvShowsItem>>() {
+            override fun createCall(): Flow<ApiResponse<List<TvShowsItem>>> =
+                remoteDataSource.getSimilarTvShows(id)
+
+            override fun convertCallResult(data: List<TvShowsItem>): Flow<List<Show>> {
+                val result = data.map {
+                    DataMapper.mapTvShowResponseToDomain(it)
+                }
+                return flow { emit(result) }
             }
 
-            override fun saveCallResult(data: DetailTvShowResponse) {
-                val detailTvShow = DetailTvShowEntity(
-                    data.genres,
-                    data.firstAirDate,
-                    data.overview,
-                    data.posterPath,
-                    data.voteAverage,
-                    data.name,
-                    data.tagLine,
-                    data.episodeRunTime,
-                    data.id
-                )
-                tvShowLocalDataSource.insertDetailTvShow(detailTvShow).subscribeOn(Schedulers.io()).observeOn(
-                    AndroidSchedulers.mainThread()).subscribe()
+            override fun emptyResult(): Flow<List<Show>> =
+                flow { emit(emptyList()) }
+        }.asFlow()
+    }
+
+    override fun searchTvShow(keyword: String): Flow<Resource<List<Show>>> {
+        return object : NetworkBoundResource<List<Show>, List<TvShowsItem>>() {
+            override fun loadFromDb(): Flow<List<Show>> {
+                return localDataSource.getSearchedTvShow("$keyword%").map {
+                    DataMapper.mapListEntityToDomain(it)
+                }
             }
-        }.asFlowable()
+
+            override fun shouldFetch(data: List<Show>?): Boolean = true
+
+            override suspend fun createCall(): Flow<ApiResponse<List<TvShowsItem>>> =
+                remoteDataSource.searchTvShows(keyword)
+
+            override suspend fun saveCallResult(data: List<TvShowsItem>) {
+                val tvShowList = ArrayList<ShowEntity>()
+                val isSearch = 1
+
+                data.map {
+                    val tvShow = DataMapper.mapTvShowResponseToEntity(it, isSearch = isSearch)
+                    tvShowList.add(tvShow)
+                }
+
+                // Delete old search result
+                localDataSource.deleteAllSearchedShow(Const.TV_SHOW_TYPE)
+
+                // Insert new Search result
+                localDataSource.insertShow(tvShowList)
+            }
+        }.asFlow()
     }
 
-    override fun getATvShow(id: Int): Flowable<TvShows> {
-        return tvShowLocalDataSource.getATvShow(id).map {
-            DataMapper.mapTvShowsEntitiesToDomain(it)
-        }
+    override suspend fun setFavorite(show: Show) {
+        val tvShowEntity = DataMapper.mapDomainToEntity(show)
+        localDataSource.setFavorite(tvShowEntity)
     }
 
 
-    override fun getFavoredTvShows(): Flowable<List<TvShows>> {
-        return tvShowLocalDataSource.getFavoredTvShows().map { DataMapper.mapListTvShowEntityToDomain(it) }
-    }
-
-    override fun setFavorite(
-        tvShow: TvShows,
-        favorite: Boolean,
-        detailTvShow: DetailTvShows
-    ) {
-        val detailTvShowEntity = DataMapper.mapDetailTvShowDomainToEntity(detailTvShow)
-        val tvShowsEntities = DataMapper.mapTvShowsDomainToEntity(tvShow)
-        tvShowLocalDataSource.setFavorite(tvShowsEntities, favorite, detailTvShowEntity)
-    }
 }

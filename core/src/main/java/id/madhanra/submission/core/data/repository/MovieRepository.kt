@@ -1,121 +1,132 @@
 package id.madhanra.submission.core.data.repository
 
-import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
+import id.madhanra.submission.core.data.LocalResource
 import id.madhanra.submission.core.data.NetworkBoundResource
-import id.madhanra.submission.core.data.source.local.MovieLocalDataSource
-import id.madhanra.submission.core.data.source.local.entity.DetailMovieEntity
-import id.madhanra.submission.core.data.source.local.entity.MoviesEntity
+import id.madhanra.submission.core.data.RemoteResource
+import id.madhanra.submission.core.data.source.local.LocalDataSource
 import id.madhanra.submission.core.data.source.remote.ApiResponse
 import id.madhanra.submission.core.data.source.remote.MovieRemoteDataSource
-import id.madhanra.submission.core.data.source.remote.response.DetailMovieResponse
-import id.madhanra.submission.core.data.source.remote.response.MoviesItem
-import id.madhanra.submission.core.domain.model.DetailMovies
-import id.madhanra.submission.core.domain.model.Movies
 import id.madhanra.submission.core.domain.repository.IMoviesRepository
 import id.madhanra.submission.core.utils.DataMapper
-import id.madhanra.submission.core.vo.Resource
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.data.source.local.entity.ShowEntity
+import id.madhanra.submission.core.data.source.remote.response.MoviesItem
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.utils.Const
+import kotlinx.coroutines.flow.*
 
+class MovieRepository(
+    private val remoteDataSource: MovieRemoteDataSource,
+    private val localDataSource: LocalDataSource
+) : IMoviesRepository {
 
-class MovieRepository (
-        private val movieRemoteDataSource: MovieRemoteDataSource,
-        private val movieLocalDataSource: MovieLocalDataSource
-): IMoviesRepository{
-
-    override fun getAllMovies(page: Int, sort: String): Flowable<Resource<PagedList<Movies>>> {
-        return object: NetworkBoundResource<PagedList<Movies>, List<MoviesItem>>() {
-            override fun loadFromDb(): Flowable<PagedList<Movies>> {
-                val config = PagedList.Config.Builder()
-                    .setEnablePlaceholders(false)
-                    .setInitialLoadSizeHint(20)
-                    .setPageSize(10)
-                    .build()
-                return RxPagedListBuilder(movieLocalDataSource.getAllMovies(sort).map {DataMapper.mapMoviesEntitiesToDomain(it)}, config).buildFlowable(BackpressureStrategy.BUFFER)
+    override fun getAllMovies(page: Int): Flow<Resource<List<Show>>> {
+        return object : NetworkBoundResource<List<Show>, List<MoviesItem>>() {
+            override fun loadFromDb(): Flow<List<Show>> {
+                return localDataSource.getAllMovies(page * 20)
+                    .map { DataMapper.mapListEntityToDomain(it) }
             }
 
-            override fun shouldFetch(data: PagedList<Movies>?): Boolean {
-                return data == null || data.isEmpty() || data.size != page * 20
-            }
+            override fun shouldFetch(data: List<Show>?): Boolean =
+                data == null || data.isEmpty() || data.size != page * 20
 
-            override fun createCall(): Flowable<ApiResponse<List<MoviesItem>>> {
-                return movieRemoteDataSource.getMovies(page)
-            }
+            override suspend fun createCall(): Flow<ApiResponse<List<MoviesItem>>> =
+                remoteDataSource.getMovies(page)
 
-            override fun saveCallResult(data: List<MoviesItem>) {
-                val movieList = ArrayList<MoviesEntity>()
-
-                data.forEach{
-                    val movieEntity = MoviesEntity(
-                        it.id,
-                        it.overview,
-                        it.title,
-                        it.posterPath,
-                        it.releaseDate
-                    )
-                    movieList.add(movieEntity)
+            override suspend fun saveCallResult(data: List<MoviesItem>) {
+                val movieList = ArrayList<ShowEntity>()
+                data.map {
+                    val movie = DataMapper.mapMovieResponseToEntity(it)
+                    movieList.add(movie)
                 }
-                movieLocalDataSource.insertMovies(movieList).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe()
-            }
 
-        }.asFlowable()
+                localDataSource.insertShow(movieList)
+            }
+        }.asFlow()
     }
 
-    override fun getDetailMovie(id: Int): Flowable<Resource<DetailMovies>> {
-        return object: NetworkBoundResource<DetailMovies, DetailMovieResponse>(){
-            override fun loadFromDb(): Flowable<DetailMovies> {
-                return movieLocalDataSource.getDetailMovie(id).map{
-                    val data = if (it.isEmpty()) null else it[0]
-                    DataMapper.mapDetailMovieEntitiesToDomain(data)
+    override fun getDetailMovie(id: String): Flow<Resource<Show>> {
+        return object : NetworkBoundResource<Show, MoviesItem>() {
+            override fun loadFromDb(): Flow<Show> {
+                return localDataSource.getShowById(id).map {
+                    DataMapper.mapEntityToDomain(it)
                 }
             }
 
-            override fun shouldFetch(data: DetailMovies?): Boolean {
-                return data?.id == 0 || data == null
+            override fun shouldFetch(data: Show?): Boolean =
+                data == null || data.id == Const.UNKNOWN_VALUE
+
+            override suspend fun createCall(): Flow<ApiResponse<MoviesItem>> =
+                remoteDataSource.getDetailMovie(id)
+
+            override suspend fun saveCallResult(data: MoviesItem) {
+                val movie = DataMapper.mapMovieResponseToEntity(data)
+                localDataSource.insertShow(listOf(movie))
+            }
+        }.asFlow()
+    }
+
+    override fun getFavoredMovies(): Flow<Resource<List<Show>>> {
+        return object : LocalResource<List<Show>>() {
+            override fun loadFromDB(): Flow<List<Show>> =
+                localDataSource.getFavoredMovies().map {
+                    DataMapper.mapListEntityToDomain(it)
+                }
+        }.asFlow()
+    }
+
+    override fun getSimilarMovies(id: String): Flow<Resource<List<Show>>> {
+        return object : RemoteResource<List<Show>, List<MoviesItem>>() {
+            override fun createCall(): Flow<ApiResponse<List<MoviesItem>>> =
+                remoteDataSource.getSimilarMovies(id)
+
+            override fun convertCallResult(data: List<MoviesItem>): Flow<List<Show>> {
+                val result = data.map {
+                    DataMapper.mapMovieResponseToDomain(it)
+                }
+                return flow { emit(result) }
             }
 
-            override fun createCall(): Flowable<ApiResponse<DetailMovieResponse>> {
-                return movieRemoteDataSource.getDetailMovie(id)
+            override fun emptyResult(): Flow<List<Show>> = flow { emit(emptyList()) }
+        }.asFlow()
+    }
+
+    override fun searchMovie(keyword: String): Flow<Resource<List<Show>>> {
+        return object : NetworkBoundResource<List<Show>, List<MoviesItem>>() {
+            override fun loadFromDb(): Flow<List<Show>> {
+                return localDataSource.getSearchedMovies("$keyword%").map {
+                    DataMapper.mapListEntityToDomain(it)
+                }
             }
 
-            override fun saveCallResult(data: DetailMovieResponse) {
-                val detailMovie = DetailMovieEntity(
-                    data.title,
-                    data.genres,
-                    data.overview,
-                    data.runtime,
-                    data.posterPath,
-                    data.releaseDate,
-                    data.voteAverage,
-                    data.tagLine,
-                    data.id
-                )
-                movieLocalDataSource.insertDetailMovie(detailMovie).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe()
+            override fun shouldFetch(data: List<Show>?): Boolean = true
+
+            override suspend fun createCall(): Flow<ApiResponse<List<MoviesItem>>> =
+                remoteDataSource.searchMovies(keyword)
+
+            override suspend fun saveCallResult(data: List<MoviesItem>) {
+                val movieList = ArrayList<ShowEntity>()
+                val isSearch = 1
+
+                data.map {
+                    val movie = DataMapper.mapMovieResponseToEntity(it, isSearch = isSearch)
+                    movieList.add(movie)
+                }
+
+                // Delete old search result
+                localDataSource.deleteAllSearchedShow(Const.MOVIE_TYPE)
+
+                // Insert new search result
+                localDataSource.insertShow(movieList)
             }
-        }.asFlowable()
+        }.asFlow()
     }
 
-    override fun getAMovie(id: Int): Flowable<Movies> {
-        return movieLocalDataSource.getAMovie(id).map {
-            DataMapper.mapMoviesEntitiesToDomain(it)
-        }
+    override suspend fun setFavorite(show: Show) {
+        val movieEntity = DataMapper.mapDomainToEntity(show)
+        localDataSource.setFavorite(movieEntity)
     }
 
-    override fun getFavoredMovies(): Flowable<List<Movies>> {
-        return movieLocalDataSource.getFavoredMovies().map { DataMapper.mapListMovieEntityToDomain(it) }
-    }
 
-    override fun setFavorite(
-        movie: Movies,
-        favorite: Boolean,
-        detailMovie: DetailMovies
-    ) {
-        val detailMovieEntities = DataMapper.mapDetailMovieDomainToEntity(detailMovie)
-        val moviesEntities = DataMapper.mapMoviesDomainToEntity(movie)
-        movieLocalDataSource.setFavorite(moviesEntities, favorite, detailMovieEntities)
-    }
 }
 

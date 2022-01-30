@@ -4,7 +4,6 @@ dependencies {
 
     // Paging
     implementation "androidx.paging:paging-runtime-ktx:$pagingVersion"
-    implementation "androidx.paging:paging-rxjava2-ktx:$pagingVersion"
 
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
@@ -28,21 +27,8 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion"
     implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
 
-    //retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxRetrofitVersion"
-    implementation "com.squareup.okhttp3:logging-interceptor:$loggingIntercepVersion"
-
-    // Room
-    implementation "androidx.room:room-runtime:$roomVersion"
-    implementation "androidx.room:room-rxjava2:$roomVersion"
-    kapt "androidx.room:room-compiler:$roomVersion"
-
-    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifeCycleVersion"
-
     //Koin
-    implementation "org.koin:koin-core:$koinVersion"
-    implementation "org.koin:koin-android:$koinVersion"
-    implementation "org.koin:koin-android-viewmodel:$koinVersion"
+    implementation "io.insert-koin:koin-core:$koinVersion"
+    implementation "io.insert-koin:koin-android:$koinVersion"
+    implementation "io.insert-koin:koin-android-viewmodel:$koinVersion"
 }
