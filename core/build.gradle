@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 31
 
         buildConfigField ("String", "API_KEY", '"4f7a42b06e6dec6822d5113076d2213c"')
@@ -38,7 +38,6 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Coroutine
@@ -47,7 +46,7 @@ dependencies {
 
     api "androidx.lifecycle:lifecycle-livedata-ktx:$lifeCycleVersion"
     api "androidx.activity:activity-ktx:1.4.0"
-    api "androidx.fragment:fragment-ktx:1.4.0"
+    api "androidx.fragment:fragment-ktx:1.4.1"
 
     // SQLCipher
     implementation "net.zetetic:android-database-sqlcipher:4.4.2"
@@ -62,8 +61,4 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
-
-    // Shimmer
-    implementation 'com.github.AgnaldoNP:AGSkeletonLoading:1.2'
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }

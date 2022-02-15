@@ -3,13 +3,38 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/backdrop_banner_gradient.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/backdrop_gradient.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/backdrop_placeholder.xml" value="0.15" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/image_poster_bg.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/shimmer_item.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/shimmer_item_grid.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/shimmer_list.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/splash_background.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/drawable/splash_bg_gradient.xml" value="0.1" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout-v23/content_detail.xml" value="0.34782608695652173" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/activity_detail.xml" value="0.25" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/activity_home.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/activity_splash_screen.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/content_detail.xml" value="0.18" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/fragment_movie.xml" value="0.22" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/fragment_tv_show.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/item_banner.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/more_movie_fragment.xml" value="0.1648148148148148" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/shimmer_banner.xml" value="0.2" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/shimmer_item_grid.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/layout/shimmer_item_horizontal.xml" value="0.21693840579710144" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/menu/bottom_menu.xml" value="0.3614583333333333" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/app/src/main/res/menu/menu_main.xml" value="0.3614583333333333" />
         <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/drawable/ic_baseline_refresh_24.xml" value="0.1" />
         <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/drawable/ic_broken_image_black.xml" value="0.1" />
         <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/drawable/ic_error.xml" value="0.1" />
         <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/drawable/ic_loading.xml" value="0.1" />
         <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/drawable/poster_placeholder.xml" value="0.1" />
-        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/layout/item_for_rv.xml" value="0.3551912568306011" />
-        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/layout/item_for_rv_grid.xml" value="0.1757852077001013" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/layout/item_for_rv.xml" value="0.16129032258064516" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/core/src/main/res/layout/item_for_rv_grid.xml" value="0.25" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/favorite/src/main/res/layout/fragment_fav_movie.xml" value="0.33" />
+        <entry key="..\:/Dicoding/MADE/movie_catalogue_app/favorite/src/main/res/layout/fragment_fav_tv_show.xml" value="0.25" />
       </map>
     </option>
   </component>

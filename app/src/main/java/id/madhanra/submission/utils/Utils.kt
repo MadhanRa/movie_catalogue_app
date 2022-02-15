@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
+import id.madhanra.submission.R
 
 object Utils {
 
@@ -12,9 +13,9 @@ object Utils {
     }
 
     fun showSnackBar(context: Context, view: View, message: String?, runnable: Runnable) {
-        val showMessage = message ?: "Unknown Error"
+        val showMessage = message ?: context.getString(R.string.unknown_error)
         Snackbar.make(view, showMessage, Snackbar.LENGTH_INDEFINITE)
-            .setAction("Retry") {
+            .setAction(context.getString(R.string.retry)) {
                 runnable.run()
             }
             .apply {

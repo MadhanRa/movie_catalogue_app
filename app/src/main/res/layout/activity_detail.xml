@@ -1,36 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".ui.detail.DetailActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.Submission.AppBarOverlay">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <ImageView
+            android:id="@+id/image_backdrop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/backdrop_placeholder"
+            android:contentDescription="@string/image_backdrop"
+            android:foreground="@drawable/backdrop_gradient"
+            android:scaleType="fitCenter"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/backdrop_placeholder" />
+
+        <aglibs.loading.skeleton.view.SkeletonImageView
+            android:id="@+id/image_poster"
+            android:layout_width="110dp"
+            android:layout_height="165dp"
+            android:layout_marginStart="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/image_poster_bg"
+            app:autoStart="false"
+            app:layout_constraintBottom_toBottomOf="@id/image_backdrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image_backdrop"
+            app:skeletonColor="@color/skeleton_grey_light"
+            tools:ignore="ContentDescription" />
+
+        <aglibs.loading.skeleton.view.SkeletonTextView
+            android:id="@+id/text_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            app:autoStart="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/image_poster"
+            app:layout_constraintTop_toTopOf="@id/image_poster"
+            app:skeletonColor="@color/skeleton_grey_light"
+            tools:text="@string/title" />
+
+        <aglibs.loading.skeleton.view.SkeletonTextView
+            android:id="@+id/text_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="start"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            app:autoStart="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_title"
+            app:layout_constraintTop_toBottomOf="@id/text_title"
+            app:skeletonColor="@color/skeleton_grey_light"
+            tools:text="@string/year" />
+
+        <TextView
+            android:id="@+id/text_overview_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:gravity="start"
+            android:text="@string/overview_title"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image_poster" />
+
+        <aglibs.loading.skeleton.view.SkeletonTextView
+            android:id="@+id/text_overview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="8"
+            android:textColor="#FFFFFF"
+            app:autoStart="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_overview_title"
+            app:skeletonColor="@color/skeleton_grey_light"
+            tools:text="@string/overview" />
+
+        <TextView
+            android:id="@+id/similar_movies_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:gravity="start"
+            android:text="@string/similar_movies_title"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_overview" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_similar_movies"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Submission.PopupOverlay" />
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/similar_movies_title"
+            tools:itemCount="4"
+            tools:listitem="@layout/item_for_rv" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerLayout_similar_movies"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
 
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            app:autoStart="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:flow_horizontalBias="0.5"
+            app:layout_constraintTop_toBottomOf="@id/similar_movies_title"
+            app:shimmer_auto_start="true"
+            app:shimmer_base_color="#E4DDDD"
+            app:shimmer_duration="1000">
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="0dp">
 
-        <include
-            layout="@layout/content_detail"
-            android:id="@+id/content_detail"/>
+                <include layout="@layout/shimmer_item_horizontal"/>
+                <include layout="@layout/shimmer_item_horizontal"/>
+                <include layout="@layout/shimmer_item_horizontal"/>
+                <include layout="@layout/shimmer_item_horizontal"/>
+            </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <aglibs.loading.skeleton.view.SkeletonButtonView
+            android:id="@+id/bt_favorite"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/add_to_favorite"
+            app:autoStart="false"
+            android:textColor="#FFFFFFFF"
+            app:layout_constraintEnd_toEndOf="@id/text_title"
+            app:layout_constraintStart_toStartOf="@id/text_year"
+            app:layout_constraintBottom_toBottomOf="@id/image_poster"/>
+
+        <LinearLayout
+            android:id="@+id/error_notification"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:contentDescription="@string/image_for_data_not_found"
+                android:layout_width="200dp"
+                android:layout_height="160dp"
+                android:src="@drawable/not_found"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/data_not_found"
+                android:layout_gravity="center"
+                android:textSize="24sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

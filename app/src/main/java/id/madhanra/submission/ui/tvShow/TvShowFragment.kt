@@ -1,19 +1,24 @@
 package id.madhanra.submission.ui.tvShow
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import id.madhanra.submission.R
-import id.madhanra.submission.core.ui.TvShowAdapter
-import id.madhanra.submission.core.utils.SortUtils
-import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.ui.GridViewAdapter
 import id.madhanra.submission.databinding.FragmentTvShowBinding
+import id.madhanra.submission.ui.BannerAdapter
 import id.madhanra.submission.ui.detail.DetailActivity
+import id.madhanra.submission.utils.OffsetPageTransformer
 import id.madhanra.submission.utils.Utils
 import id.madhanra.submission.utils.Utils.showToast
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -22,14 +27,11 @@ class TvShowFragment : Fragment() {
 
     private val viewModel: TvShowViewModel by viewModel()
 
-    private val sortAZ = "A-Z"
-    private val sortZA = "Z-A"
-    private val sortDEFAULT = "Default"
-
     private var _binding: FragmentTvShowBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var tvShowAdapter: TvShowAdapter
+    private lateinit var bannerAdapter: BannerAdapter
+    private lateinit var tvShowAdapter: GridViewAdapter
 
     private lateinit var bottomNavigationView: BottomNavigationView
 
@@ -49,7 +51,7 @@ class TvShowFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setPage(currentPage, SortUtils.DEFAULT)
+        viewModel.setPage(currentPage)
 
         loadUI()
         viewModelObserver()
@@ -58,100 +60,109 @@ class TvShowFragment : Fragment() {
     private fun loadUI() {
         bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
 
-        tvShowAdapter = TvShowAdapter()
+        // Prevent re-shimmer
+        if (viewModel.getIsAlreadyShimmering())
+            stopShimmering()
+        else
+            startShimmering()
 
-        with(binding){
-            rvTvShow.layoutManager = LinearLayoutManager(context)
-            rvTvShow.hasFixedSize()
-            rvTvShow.adapter = tvShowAdapter
-            rvTvShow.isNestedScrollingEnabled = false
+        tvShowAdapter = GridViewAdapter()
+        bannerAdapter = BannerAdapter(requireContext())
 
-            tvShowAdapter.onItemClick = { selectedItem ->
-                val intent = Intent (activity, DetailActivity::class.java).apply {
-                    putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
-                    putExtra(DetailActivity.EXTRA_CODE, 0)
-                }
-                startActivity(intent)
-            }
+        tvShowAdapter.onItemClicked = { selected ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra(DetailActivity.EXTRA_ID, selected.id)
+            intent.putExtra(DetailActivity.EXTRA_CODE, selected.showType)
+            startActivity(intent)
+        }
+
+        with(binding) {
+            val phoneOrientation = requireActivity().resources.configuration.orientation
+            val spanCount = if (phoneOrientation == Configuration.ORIENTATION_PORTRAIT) 3 else 7
+
+            rvPopularTvShows.layoutManager = GridLayoutManager(context, spanCount)
+            rvPopularTvShows.setHasFixedSize(false)
+            rvPopularTvShows.adapter = tvShowAdapter
+            rvPopularTvShows.isNestedScrollingEnabled = false
+
+            vpTvShowsBanner.adapter = bannerAdapter
+            vpTvShowsBanner.clipToPadding = false
+            vpTvShowsBanner.clipChildren = false
+            vpTvShowsBanner.offscreenPageLimit = 3
+            vpTvShowsBanner.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+            val pageMarginPx = resources.getDimensionPixelOffset(R.dimen.pageMargin)
+            val offsetPx = resources.getDimensionPixelOffset(R.dimen.offset)
+
+            vpTvShowsBanner.setPageTransformer(OffsetPageTransformer(offsetPx, pageMarginPx))
+            dotsIndicatorBannerTvShows.setViewPager2(vpTvShowsBanner)
 
             nestedScrollTvShow.setOnScrollChangeListener(
-                    NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
-                        val height = (v?.getChildAt(0)?.measuredHeight ?: 0) - (v?.measuredHeight ?: 0)
-                        if (scrollY == height && scrollY > lastBottomLocation) {
-                            if (currentPage < maxPage) {
-                                viewModel.setPage(++currentPage, SortUtils.DEFAULT)
-                                lastBottomLocation = scrollY
-                                showToast(requireContext(), "Load more.")
-                            } else {
-                                showToast(requireContext(), "Reach Max")
-                            }
+                NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+                    val height = (v?.getChildAt(0)?.measuredHeight ?: 0) - (v?.measuredHeight ?: 0)
+                    if (scrollY == height && scrollY > lastBottomLocation) {
+                        if (currentPage < maxPage) {
+                            viewModel.setPage(++currentPage)
+                            lastBottomLocation = scrollY
+                            showToast(requireContext(), getString(R.string.load_more_message))
+                        } else {
+                            showToast(requireContext(), getString(R.string.reach_max_page_message))
                         }
                     }
+                }
             )
         }
     }
 
     private fun viewModelObserver() {
-        viewModel.getTvShows().observe(viewLifecycleOwner, { tvShows ->
-            if (tvShows != null) {
-                when (tvShows.status) {
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.errorNotification.visibility = View.GONE
-                    }
-                    Status.SUCCESS -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.GONE
-                        tvShowAdapter.submitList(tvShows.data)
-                        tvShowAdapter.notifyDataSetChanged()
-                    }
-                    Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.VISIBLE
+        viewModel.getTvShows().observe(viewLifecycleOwner) { tvShows ->
+            when (tvShows) {
+                is Resource.Loading -> {
+                    startShimmering()
+                }
+
+                is Resource.Success -> {
+                    val data = tvShows.data as ArrayList<Show>
+                    if (!data.isNullOrEmpty()) {
+                        tvShowAdapter.setList(data)
+                        bannerAdapter.setBanner(data)
+                        stopShimmering()
+                    } else {
+                        showToast(requireContext(), getString(R.string.data_not_found))
+                        // Show SnackBar for retry load data
                         retrySnackBar(tvShows.message)
-                        showToast(requireContext(), "Terjadi Kesalahan")
                     }
+                    // Prevent re-shimmering
+                    viewModel.setAlreadyShimmer()
+                }
+                else -> {
+                    showToast(requireContext(), getString(R.string.data_not_found))
+                    // Show SnackBar for retry load data
+                    retrySnackBar(tvShows.message)
                 }
             }
-        })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_main, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var sort = ""
-        when (item.itemId){
-            R.id.action_az -> sort = sortAZ
-            R.id.action_za -> sort = sortZA
-            R.id.action_default -> sort = sortDEFAULT
         }
-        viewModel.setPage(currentPage, sort)
-        viewModel.getTvShows().observe(this, { tvShow ->
-            if (tvShow != null) {
-                when (tvShow.status) {
-                    Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
-                    Status.SUCCESS -> {
-                        binding.progressBar.visibility = View.GONE
-                        tvShowAdapter.submitList(tvShow.data)
-                        tvShowAdapter.notifyDataSetChanged()
-                    }
-                    Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(context, "Terjadi Kesalahan", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        })
-        item.isChecked = true
-        return super.onOptionsItemSelected(item)
     }
 
     private fun retrySnackBar(message: String?) {
         Utils.showSnackBar(requireContext(), bottomNavigationView, message) {
             viewModel.refresh()
+        }
+    }
+
+    private fun startShimmering() {
+        if (lastBottomLocation == 0) {
+            with(binding) {
+                shimmerLayoutTvShows.startShimmer()
+                shimmerLayoutTvShows.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun stopShimmering() {
+        with(binding) {
+            shimmerLayoutTvShows.stopShimmer()
+            shimmerLayoutTvShows.visibility = View.GONE
         }
     }
 

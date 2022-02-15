@@ -1,23 +1,33 @@
 package id.madhanra.submission.ui.movie
 
 import androidx.lifecycle.*
-import androidx.paging.PagedList
-import id.madhanra.submission.core.domain.model.Movies
-import id.madhanra.submission.core.domain.model.PageSort
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
-import id.madhanra.submission.core.vo.Resource
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
 
-class MovieViewModel(private val movieUseCase: MoviesUseCase) : ViewModel() {
-    private val page = MutableLiveData<PageSort>()
+class MovieViewModel(movieUseCase: MoviesUseCase) : ViewModel() {
+    // If already shimmering or not
+    private var isAlreadyShimmer: Boolean = false
 
-    private var movieList = page.switchMap {
-        LiveDataReactiveStreams.fromPublisher(movieUseCase.getAllMovies(it.page, it.sort))
+    // Used for Load More
+    private val page = MutableLiveData<Int>()
+
+    // Get Movie, triggered when page is set by setPage() or if refresh() is called
+    private var popularMovieList = page.switchMap {
+        movieUseCase.getPopularMovies(it).asLiveData()
     }
 
-    fun setPage(page: Int, sort: String){
-        this.page.postValue(PageSort(page, sort))
+    fun setAlreadyShimmer() {
+        isAlreadyShimmer = true
     }
-    fun getMovies() : LiveData<Resource<PagedList<Movies>>> = movieList
+
+    fun setPage(page: Int){
+        this.page.postValue(page)
+    }
+
+    fun getIsAlreadyShimmering() = isAlreadyShimmer
+
+    fun getPopularMovies() : LiveData<Resource<List<Show>>> = popularMovieList
 
     fun refresh() {
         page.postValue(page.value)

@@ -5,7 +5,7 @@ import id.madhanra.submission.core.domain.model.Show
 import kotlinx.coroutines.flow.Flow
 
 interface IMoviesRepository {
-    fun getAllMovies(page: Int): Flow<Resource<List<Show>>>
+    fun getPopularMovies(page: Int): Flow<Resource<List<Show>>>
 
     fun getDetailMovie(id: String): Flow<Resource<Show>>
 

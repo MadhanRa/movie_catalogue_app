@@ -9,11 +9,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "id.madhanra.submission.favorite"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 23
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,5 +34,4 @@ android {
 dependencies {
     implementation project(":app")
     implementation project(":core")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

@@ -13,8 +13,7 @@ import java.lang.Exception
 class MovieRemoteDataSource(
         private val apiService: MovieApi
 ){
-
-    suspend fun getMovies(page: Int): Flow<ApiResponse<List<MoviesItem>>> {
+    suspend fun getPopularMovies(page: Int): Flow<ApiResponse<List<MoviesItem>>> {
         EspressoIdlingResource.increment()
         return flow {
             try {

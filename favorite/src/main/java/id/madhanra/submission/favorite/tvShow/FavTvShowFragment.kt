@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import id.madhanra.submission.core.domain.model.TvShows
-import id.madhanra.submission.core.ui.FavTvShowAdapter
+import androidx.recyclerview.widget.GridLayoutManager
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.ui.GridViewAdapter
 import id.madhanra.submission.core.utils.Const
 import id.madhanra.submission.favorite.databinding.FragmentFavTvShowBinding
 import id.madhanra.submission.favorite.di.favoriteModule
@@ -29,7 +30,7 @@ class FavTvShowFragment : Fragment() {
     private var _binding: FragmentFavTvShowBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var tvShowAdapter: FavTvShowAdapter
+    private lateinit var tvShowAdapter: GridViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,32 +51,46 @@ class FavTvShowFragment : Fragment() {
     }
 
     private fun loadUI() {
-        tvShowAdapter = FavTvShowAdapter()
-        tvShowAdapter.onItemClick = { selectedItem ->
+        tvShowAdapter = GridViewAdapter()
+        tvShowAdapter.onItemClicked = { selectedItem ->
             val intent = Intent (activity, DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
-                putExtra(DetailActivity.EXTRA_CODE, 0)
+                putExtra(DetailActivity.EXTRA_CODE, selectedItem.showType)
             }
             startActivity(intent)
         }
         with(binding){
             progressBar.visibility = View.VISIBLE
-            rvFavTvShow.layoutManager = LinearLayoutManager(context)
-            rvFavTvShow.setHasFixedSize(true)
+            rvFavTvShow.layoutManager = GridLayoutManager(context, 3)
+            rvFavTvShow.setHasFixedSize(false)
             rvFavTvShow.adapter = tvShowAdapter
         }
     }
 
     private fun viewModelObserver() {
-        viewModel.getFavTvShows().observe(viewLifecycleOwner, { tvShow ->
-            binding.progressBar.visibility = View.GONE
-            if (tvShow.isEmpty()) {
-                binding.nothingNotification.visibility = View.VISIBLE
-            } else {
-                binding.nothingNotification.visibility = View.GONE
+        viewModel.getFavTvShows().observe(viewLifecycleOwner) { tvShow ->
+            when (tvShow) {
+                is Resource.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Resource.Success -> {
+                    val data = tvShow.data
+                    binding.progressBar.visibility = View.GONE
+
+                    if (!data.isNullOrEmpty()) {
+                        tvShowAdapter.setList(data as ArrayList<Show>)
+                        binding.nothingNotification.visibility = View.GONE
+                    } else {
+                        binding.nothingNotification.visibility = View.VISIBLE
+                    }
+                }
+
+                is Resource.Error -> {
+                    binding.nothingNotification.visibility = View.VISIBLE
+                }
             }
-            tvShowAdapter.setList(tvShow as ArrayList<TvShows>)
-        })
+        }
     }
 
     override fun onResume() {

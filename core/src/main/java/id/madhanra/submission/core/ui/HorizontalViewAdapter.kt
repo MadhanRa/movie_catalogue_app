@@ -4,8 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import com.squareup.picasso.Picasso
 import id.madhanra.submission.core.R
 import id.madhanra.submission.core.databinding.ItemForRvBinding
 import id.madhanra.submission.core.domain.model.Show
@@ -51,10 +50,11 @@ class HorizontalViewAdapter : RecyclerView.Adapter<HorizontalViewAdapter.PosterV
                 if (isAlreadyShimmer) ivPosterHorizontal.startLoading()
 
                 // Horizontal poster
-                Glide.with(itemView.context)
+                Picasso.get()
                     .load(Const.URL_BASE_IMAGE + show.posterPath)
-                    .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))
-                    .centerCrop()
+                    .resize(Const.POSTER_TARGET_WIDTH, Const.POSTER_TARGET_HEIGHT)
+                    .error(R.drawable.ic_error)
+                    .placeholder(R.drawable.poster_placeholder)
                     .into(ivPosterHorizontal)
 
                 // Stop shimmering

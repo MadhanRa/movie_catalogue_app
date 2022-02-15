@@ -11,7 +11,6 @@ interface MovieApi {
     companion object {
         const val API_KEY = BuildConfig.API_KEY
     }
-
     @GET("movie/popular")
     suspend fun getPopularMovies(
         @Query("api_key") api: String? = API_KEY,
@@ -24,7 +23,7 @@ interface MovieApi {
         @Query("api_key") api: String? = API_KEY
     ): MoviesItem
 
-    @GET("movie/{id}/similiar")
+    @GET("movie/{id}/similar")
     suspend fun getSimilarMovies(
         @Path("id") id: String,
         @Query("api_key") api: String? = API_KEY

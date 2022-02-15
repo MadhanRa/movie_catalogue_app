@@ -20,7 +20,7 @@ class MovieRepository(
     private val localDataSource: LocalDataSource
 ) : IMoviesRepository {
 
-    override fun getAllMovies(page: Int): Flow<Resource<List<Show>>> {
+    override fun getPopularMovies(page: Int): Flow<Resource<List<Show>>> {
         return object : NetworkBoundResource<List<Show>, List<MoviesItem>>() {
             override fun loadFromDb(): Flow<List<Show>> {
                 return localDataSource.getAllMovies(page * 20)
@@ -31,7 +31,7 @@ class MovieRepository(
                 data == null || data.isEmpty() || data.size != page * 20
 
             override suspend fun createCall(): Flow<ApiResponse<List<MoviesItem>>> =
-                remoteDataSource.getMovies(page)
+                remoteDataSource.getPopularMovies(page)
 
             override suspend fun saveCallResult(data: List<MoviesItem>) {
                 val movieList = ArrayList<ShowEntity>()

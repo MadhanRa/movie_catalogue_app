@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import id.madhanra.submission.core.domain.model.Movies
-import id.madhanra.submission.core.ui.FavMovieAdapter
+import androidx.recyclerview.widget.GridLayoutManager
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.ui.GridViewAdapter
 import id.madhanra.submission.core.utils.Const
 import id.madhanra.submission.favorite.databinding.FragmentFavMovieBinding
 import id.madhanra.submission.favorite.di.favoriteModule
@@ -27,7 +28,7 @@ class FavMovieFragment : Fragment() {
     private var _binding: FragmentFavMovieBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var movieAdapter: FavMovieAdapter
+    private lateinit var movieAdapter: GridViewAdapter
 
 
     override fun onCreateView(
@@ -48,32 +49,45 @@ class FavMovieFragment : Fragment() {
     }
 
     private fun loadUI() {
-        movieAdapter = FavMovieAdapter()
-        movieAdapter.onItemClick = { selectedItem ->
-            val intent = Intent(activity, DetailActivity::class.java).apply {
+        movieAdapter = GridViewAdapter()
+        movieAdapter.onItemClicked = { selectedItem ->
+            val intent = Intent(requireContext(), DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
-                putExtra(DetailActivity.EXTRA_CODE, FavMovieAdapter.IF_MOVIE)
+                putExtra(DetailActivity.EXTRA_CODE, selectedItem.showType)
             }
             startActivity(intent)
         }
         with(binding){
-            progressBar.visibility = View.VISIBLE
-            rvFavMovies.layoutManager = LinearLayoutManager(context)
-            rvFavMovies.setHasFixedSize(true)
+            rvFavMovies.layoutManager = GridLayoutManager(context, 3)
+            rvFavMovies.setHasFixedSize(false)
             rvFavMovies.adapter = movieAdapter
         }
     }
 
     private fun viewModelObserve() {
-        viewModel.getFavMovies().observe(viewLifecycleOwner, { movies ->
-            binding.progressBar.visibility = View.GONE
-            if (movies.isEmpty()) {
-                binding.nothingNotification.visibility = View.VISIBLE
-            } else {
-                binding.nothingNotification.visibility = View.GONE
+        viewModel.getFavMovies().observe(viewLifecycleOwner) { movies ->
+            when (movies) {
+                is Resource.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Resource.Success -> {
+                    val data = movies.data
+                    binding.progressBar.visibility = View.GONE
+
+                    if (!data.isNullOrEmpty()) {
+                        movieAdapter.setList(data as ArrayList<Show>)
+                        binding.nothingNotification.visibility = View.GONE
+                    } else {
+                        binding.nothingNotification.visibility = View.VISIBLE
+                    }
+                }
+
+                is Resource.Error -> {
+                    binding.nothingNotification.visibility = View.VISIBLE
+                }
             }
-            movieAdapter.setList(movies as ArrayList<Movies>)
-        })
+        }
     }
 
     override fun onResume() {

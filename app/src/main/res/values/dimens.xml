@@ -1,1 +1,6 @@
-<resources />
+<resources>
+
+    <dimen name="pageMargin">4dp</dimen>
+    <dimen name="offset">12dp</dimen>
+    <dimen name="pageMarginAndOffset">16dp</dimen>
+</resources>

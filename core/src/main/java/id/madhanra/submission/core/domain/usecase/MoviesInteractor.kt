@@ -6,7 +6,8 @@ import id.madhanra.submission.core.domain.model.Show
 import kotlinx.coroutines.flow.Flow
 
 class MoviesInteractor(private val moviesRepository: IMoviesRepository): MoviesUseCase {
-    override fun getAllMovies(page: Int): Flow<Resource<List<Show>>> = moviesRepository.getAllMovies(page)
+
+    override fun getPopularMovies(page: Int): Flow<Resource<List<Show>>> = moviesRepository.getPopularMovies(page)
 
     override fun getDetailMovie(id: String): Flow<Resource<Show>> = moviesRepository.getDetailMovie(id)
 

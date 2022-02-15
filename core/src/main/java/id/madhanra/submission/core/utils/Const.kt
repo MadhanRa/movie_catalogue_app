@@ -25,6 +25,5 @@ class Const {
         // Error Message
         const val NO_INTERNET = "Internet connection issue."
 
-        const val IF_MOVIE = 100
     }
 }

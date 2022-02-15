@@ -1,18 +1,24 @@
 package id.madhanra.submission.ui.movie
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import id.madhanra.submission.R
-import id.madhanra.submission.core.ui.MovieAdapter
-import id.madhanra.submission.core.utils.SortUtils
-import id.madhanra.submission.core.vo.Status
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.ui.GridViewAdapter
 import id.madhanra.submission.databinding.FragmentMovieBinding
+import id.madhanra.submission.ui.BannerAdapter
 import id.madhanra.submission.ui.detail.DetailActivity
+import id.madhanra.submission.utils.OffsetPageTransformer
 import id.madhanra.submission.utils.Utils.showSnackBar
 import id.madhanra.submission.utils.Utils.showToast
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -21,14 +27,12 @@ class MovieFragment : Fragment() {
 
     private val viewModel: MovieViewModel by viewModel()
 
-    private val sortAZ = "A-Z"
-    private val sortZA = "Z-A"
-    private val sortDEFAULT = "Default"
-
     private var _binding: FragmentMovieBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var movieAdapter: MovieAdapter
+    // Adapter
+    private lateinit var gridListAdapter: GridViewAdapter
+    private lateinit var bannerAdapter: BannerAdapter
 
     private lateinit var bottomNavigationView: BottomNavigationView
 
@@ -42,14 +46,13 @@ class MovieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMovieBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setPage(currentPage, SortUtils.DEFAULT)
+        viewModel.setPage(currentPage)
 
         loadUI()
         viewModelObserver()
@@ -57,94 +60,105 @@ class MovieFragment : Fragment() {
 
     private fun loadUI() {
         bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-        movieAdapter = MovieAdapter()
-        with(binding){
-            rvMovies.layoutManager = LinearLayoutManager(context)
-            rvMovies.hasFixedSize()
-            rvMovies.adapter = movieAdapter
-            rvMovies.isNestedScrollingEnabled = false
 
-            movieAdapter.onItemClick = { selectedItem ->
-                val intent = Intent(activity, DetailActivity::class.java).apply {
-                    putExtra(DetailActivity.EXTRA_ID, selectedItem.id)
-                    putExtra(DetailActivity.EXTRA_CODE, MovieAdapter.IF_MOVIE)
-                }
-                startActivity(intent)
-            }
+        // Prevent re-shimmer
+        if (viewModel.getIsAlreadyShimmering())
+            stopShimmering()
+        else
+            startShimmering()
 
-            nestedScrollMovie.setOnScrollChangeListener(
-                    NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
-                        val height = (v?.getChildAt(0)?.measuredHeight ?: 0) - (v?.measuredHeight ?: 0)
-                        if (scrollY == height && scrollY > lastBottomLocation) {
-                            if (currentPage < maxPage) {
-                                viewModel.setPage(++currentPage, SortUtils.DEFAULT)
-                                lastBottomLocation = scrollY
-                                showToast(requireContext(), "Load more.")
-                            } else {
-                                showToast(requireContext(), "Reach Max")
-                            }
-                        }
-                    }
-            )
+        bannerAdapter = BannerAdapter(requireContext())
+        gridListAdapter = GridViewAdapter()
+
+        gridListAdapter.onItemClicked = { selected ->
+            val intent = Intent(requireContext(), DetailActivity::class.java)
+            intent.putExtra(DetailActivity.EXTRA_ID, selected.id)
+            intent.putExtra(DetailActivity.EXTRA_CODE, selected.showType)
+            startActivity(intent)
         }
 
+        with(binding) {
+            val phoneOrientation = requireActivity().resources.configuration.orientation
+            val spanCount = if (phoneOrientation == Configuration.ORIENTATION_PORTRAIT) 3 else 7
+
+            rvPopularMovies.layoutManager = GridLayoutManager(context, spanCount)
+            rvPopularMovies.setHasFixedSize(false)
+            rvPopularMovies.adapter = gridListAdapter
+            rvPopularMovies.isNestedScrollingEnabled = false
+
+            vpMovieBanner.adapter = bannerAdapter
+            vpMovieBanner.clipToPadding = false
+            vpMovieBanner.clipChildren = false
+            vpMovieBanner.offscreenPageLimit = 3
+            vpMovieBanner.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+            val pageMarginPx = resources.getDimensionPixelOffset(R.dimen.pageMargin)
+            val offsetPx = resources.getDimensionPixelOffset(R.dimen.offset)
+
+            vpMovieBanner.setPageTransformer(OffsetPageTransformer(offsetPx, pageMarginPx))
+            dotsIndicatorBannerMovie.setViewPager2(vpMovieBanner)
+
+            nestedScrollMovie.setOnScrollChangeListener(
+                NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+                    val height = (v?.getChildAt(0)?.measuredHeight ?: 0) - (v?.measuredHeight ?: 0)
+                    if (scrollY == height && scrollY > lastBottomLocation) {
+                        if (currentPage < maxPage) {
+                            viewModel.setPage(++currentPage)
+                            lastBottomLocation = scrollY
+                            showToast(requireContext(), getString(R.string.load_more_message))
+                        } else {
+                            showToast(requireContext(), getString(R.string.reach_max_page_message))
+                        }
+                    }
+                }
+            )
+        }
     }
 
     private fun viewModelObserver() {
-        viewModel.getMovies().observe(viewLifecycleOwner, { movies ->
-            if (movies != null) {
-                when (movies.status) {
-                    Status.LOADING -> {
-                        binding.errorNotification.visibility = View.GONE
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-                    Status.SUCCESS -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.GONE
-                        movieAdapter.submitList(movies.data)
-                        movieAdapter.notifyDataSetChanged()
-                    }
-                    Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.errorNotification.visibility = View.VISIBLE
+        viewModel.getPopularMovies().observe(viewLifecycleOwner) { movies ->
+            when (movies) {
+                is Resource.Loading -> {
+                    startShimmering()
+                }
+
+                is Resource.Success -> {
+                    val data = movies.data as ArrayList<Show>
+                    if (!data.isNullOrEmpty()) {
+                        gridListAdapter.setList(data)
+                        bannerAdapter.setBanner(data)
+                        stopShimmering()
+                    } else {
+                        showToast(requireContext(), getString(R.string.data_not_found))
+                        // Show SnackBar for retry load data
                         retrySnackBar(movies.message)
-                        showToast(requireContext(), "Terjadi Kesalahan")
                     }
+                    // Prevent re-shimmering
+                    viewModel.setAlreadyShimmer()
+                }
+                else -> {
+                    showToast(requireContext(), getString(R.string.data_not_found))
+                    // Show SnackBar for retry load data
+                    retrySnackBar(movies.message)
                 }
             }
-        })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_main, menu)
-        return super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var sort = ""
-        when (item.itemId){
-            R.id.action_az -> sort = sortAZ
-            R.id.action_za -> sort = sortZA
-            R.id.action_default -> sort = sortDEFAULT
         }
-        viewModel.setPage(currentPage, sort)
-        viewModel.getMovies().observe(this, { movies ->
-            if (movies != null) {
-                when (movies.status) {
-                    Status.LOADING -> binding.progressBar.visibility = View.VISIBLE
-                    Status.SUCCESS -> {
-                        binding.progressBar.visibility = View.GONE
-                        movieAdapter.submitList(movies.data)
-                        movieAdapter.notifyDataSetChanged()
-                    }
-                    Status.ERROR -> {
-                        binding.progressBar.visibility = View.GONE
-                        showToast(requireContext(), "Terjadi Kesalahan")                    }
-                }
+    }
+
+    private fun startShimmering() {
+        if (lastBottomLocation == 0) {
+            with(binding) {
+                shimmerLayoutMovies.startShimmer()
+                shimmerLayoutMovies.visibility = View.VISIBLE
             }
-        })
-        item.isChecked = true
-        return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun stopShimmering() {
+        with(binding) {
+            shimmerLayoutMovies.stopShimmer()
+            shimmerLayoutMovies.visibility = View.GONE
+        }
     }
 
     private fun retrySnackBar(message: String?) {

@@ -1,16 +1,12 @@
 package id.madhanra.submission.ui.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.LiveDataReactiveStreams
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import id.madhanra.submission.core.domain.model.DetailMovies
-import id.madhanra.submission.core.domain.model.DetailTvShows
-import id.madhanra.submission.core.domain.model.Movies
-import id.madhanra.submission.core.domain.model.TvShows
+import androidx.lifecycle.*
 import id.madhanra.submission.core.domain.usecase.MoviesUseCase
 import id.madhanra.submission.core.domain.usecase.TvShowsUseCase
-import id.madhanra.submission.core.vo.Resource
+import id.madhanra.submission.core.data.Resource
+import id.madhanra.submission.core.data.source.local.entity.DoubleTrigger
+import id.madhanra.submission.core.domain.model.Show
+import id.madhanra.submission.core.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -19,33 +15,79 @@ class DetailViewModel(
     private val tvShowUseCase: TvShowsUseCase,
     ): ViewModel() {
 
-    private lateinit var id : String
+    // If already Shimmering
+    private var isAlreadyShimmer: Boolean = false
 
-    fun setSelectedItem(id: String) {
-        this.id = id
-    }
+    //Trigger by showId and showType to load detail and similar list
+    private var doubleTrigger = MutableLiveData<DoubleTrigger>()
 
-    fun getDetailMovie(): LiveData<Resource<DetailMovies>> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getDetailMovie(id.toInt()))
+    //Trigger when similar list is empty
+    private var listEmptyTrigger = MutableLiveData<Unit>()
 
-
-    fun getDetailTvShow(): LiveData<Resource<DetailTvShows>> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getDetailTvShow(id.toInt()))
-
-    fun getAMovie(): LiveData<Movies> = LiveDataReactiveStreams.fromPublisher(movieUseCase.getAMovie(id.toInt()))
-
-    fun getATvShow(): LiveData<TvShows> = LiveDataReactiveStreams.fromPublisher(tvShowUseCase.getATvShow(id.toInt()))
-
-    fun setFavoriteMovie(movieEntity: DetailMovies, aMovieEntity: Movies) {
-        viewModelScope.launch (Dispatchers.IO){
-            val isFavorite = !movieEntity.favorite
-            movieUseCase.setFavorite(aMovieEntity, isFavorite, movieEntity)
+    //Get detail
+    private var show = doubleTrigger.switchMap {
+        when (it.showType) {
+            Const.MOVIE_TYPE ->
+                movieUseCase.getDetailMovie(it.showId).asLiveData()
+            else ->
+                tvShowUseCase.getDetailTvShow(it.showId).asLiveData()
         }
     }
 
-    fun setFavoriteTvShow(tvShowEntity: DetailTvShows, aTvShowEntity: TvShows) {
-        viewModelScope.launch (Dispatchers.IO){
-            val isFavorite = !tvShowEntity.favorite
-            tvShowUseCase.setFavorite(aTvShowEntity, isFavorite, tvShowEntity)
+    // Get Similar List
+    private var similarList = doubleTrigger.switchMap {
+        when (it.showType) {
+            Const.MOVIE_TYPE ->
+                movieUseCase.getSimilarMovies(it.showId).asLiveData()
+            else ->
+                tvShowUseCase.getSimilarTvShows(it.showId).asLiveData()
         }
     }
+
+    // Get popular list
+    // Triggered when similar list is empty
+    private var popularList = listEmptyTrigger.switchMap {
+        val showType = doubleTrigger.value?.showType
+        val page = 1
+
+        when (showType) {
+            Const.MOVIE_TYPE ->
+                movieUseCase.getPopularMovies(page).asLiveData()
+            else ->
+                tvShowUseCase.getAllTvShows(page).asLiveData()
+        }
+    }
+
+    fun setAlreadyShimmer() {
+        isAlreadyShimmer = true
+    }
+
+    fun setShowIdAndType(show_id: String, show_type: Int) {
+        doubleTrigger.postValue(DoubleTrigger(show_id, show_type))
+    }
+
+    fun setListEmptyTrigger() {
+        listEmptyTrigger.postValue(Unit)
+    }
+
+    fun setFavorite(show: Show) {
+        viewModelScope.launch(Dispatchers.IO) {
+            show.isFavorite = if (show.isFavorite == 0) 1 else 0
+            when (show.showType) {
+                Const.MOVIE_TYPE ->
+                    movieUseCase.setFavorite(show)
+                else ->
+                    tvShowUseCase.setFavorite(show)
+            }
+        }
+    }
+
+    fun getShow(): LiveData<Resource<Show>> = show
+
+    fun getIsAlreadyShimmer() = isAlreadyShimmer
+
+    fun getSimilarList(): LiveData<Resource<List<Show>>> = similarList
+
+    fun getPopularList(): LiveData<Resource<List<Show>>> = popularList
 
 }
